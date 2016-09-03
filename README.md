@@ -1,2 +1,2 @@
-# editor
+# ya-editor
 web editor
