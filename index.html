@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>超轻富文本编辑器</title>
+	<link rel="stylesheet" href="./assets/css/editor.css">
+	<style>		
+		.editor {
+			width: 750px;
+			height: 300px;
+			margin: 50px auto;
+		}
+	</style>
+</head>
+<body>	
+	<div id="editor" class="editor"></div>
+	<script src="./assets/js/editor.js"></script>
+	<script>		
+		// Edit.registerUI('summary',function(editor,uiName){
+		// 	var summary = 	'<details>'
+		// 					+'<summary>模块标题</summary>'
+		// 					+'<p>模块内容</p>'
+		// 				+'</details>'; 
+		//     editor.registerCommand(uiName,{
+		//         execCommand:function(){
+		//         	editor.execCommand('inserthtml',summary);
+		//         }
+		//     });
+		//     var btn = new Edit.ui.Button({
+		//         name:'summary',
+		//         title:'summary',
+		//         cssRules :'background-position: -280px 0;',
+		//         handles: {
+		//         	click: function () {
+		// 	           editor.execCommand(uiName);
+		// 	        }
+		// 	    }
+		//     });	
+		//     return btn;
+		// });
+		var edit = Edit.getEditor('editor');	
+		console.log(edit)
+	</script>
+</body>
+</html>
