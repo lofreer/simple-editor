@@ -57,6 +57,7 @@
 	margin: 0;
 }
 .editor-item {
+	position: relative;
 	display: inline-block;
 	width: 30px;
 	height: 30px;
@@ -66,8 +67,32 @@
 	background: #fff;
 	outline:none;
 }
+.editor-item::after {
+    font-size: 12px;
+    line-height: 1.6rem;
+    position: absolute;
+    z-index: 99;
+    top: 100%;
+    left: 50%;
+    display: block;
+    overflow: hidden;
+    max-width: 32rem;
+    padding: 2px 4px;
+    content: attr(data-title);
+    transition: all .216s ease;
+    transform: translate(-50%, 0);
+    text-overflow: ellipsis;
+    pointer-events: none;
+    opacity: 0;
+    color: #fff;
+    border-radius: 3px;
+    background: rgba(51, 51, 51, .9);
+}
 .editor-item:hover {
 	background: #f0f3f6;
+}
+.editor-item:hover::after {
+	opacity: 1;
 }
 .edui-state-checked .eicon {
 	color: #00a0e9;

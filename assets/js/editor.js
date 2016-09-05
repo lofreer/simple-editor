@@ -42,7 +42,6 @@
 			props = this.props || {},
 			children = this.children || [],
 			handles = this.handles || {};
-
 		for (var prop in props) {
 			if (props[prop]) {
 				el.setAttribute(prop,props[prop]);
@@ -320,7 +319,7 @@
 	UI.Button.prototype = {
 		getHtmlTpl: function() {
 			var self = this;
-			return UI.createEl('li',{id:self.id,class:'editor-item',style:self.cssRules,title:self.title,draggable:true},[					
+			return UI.createEl('li',{id:self.id,class:'editor-item',style:self.cssRules,'data-title':self.title,draggable:true},[					
 						UI.createEl('span',{class:'eicon '+self.className})	
 					],self.handles);
 		}
@@ -777,7 +776,7 @@
     		var ui = new Edit.ui.Button({
     			name: cmd,
     			className: 'eicon-' + cmd,
-    			title: '',
+    			title: cmd,
     			handles: {
     				click: function() {
 	    				editor.execCommand(cmd);
@@ -821,7 +820,7 @@
     		var ui = new Edit.ui.Button({
     			name: cmd,
     			className: 'eicon-' + cmd,
-    			title: '',
+    			title: cmd,
     			handles: {
     				click: function() {
     					if (ui.isDisabled()) return;
@@ -866,7 +865,7 @@
     		var ui = new Edit.ui.Button({
     			name: cmd,
     			className: 'eicon-' + cmd,
-    			title: '',
+    			title: cmd,
     			handles: {
     				click: function() {
     					if (ui.isDisabled()) return;
@@ -911,7 +910,7 @@
     		var ui = new Edit.ui.Button({
     			name: cmd,
     			className: 'eicon-' + cmd,
-    			title: '',
+    			title: cmd,
     			handles: {
     				click: function() {
     					if (ui.isDisabled()) return;
@@ -960,7 +959,7 @@
     		var ui = new Edit.ui.Button({
     			name: cmd,
     			className: 'eicon-' + cmd,
-    			title: '',
+    			title: cmd,
     			handles: {
     				click: function() {
     					if (ui.isDisabled()) return;
@@ -994,7 +993,7 @@
     		var ui = new Edit.ui.Button({
     			name: cmd,
     			className: 'eicon-' + cmd,
-    			title: '',
+    			title: cmd,
     			handles: {
     				click: function() {
     					if (ui.isDisabled()) return;
@@ -1045,7 +1044,7 @@
     		var ui = new Edit.ui.Button({
     			name: cmd,
     			className: 'eicon-' + cmd,
-    			title: '',
+    			title: cmd,
     			handles: {
     				click: function() {
     					if (ui.isDisabled()) return;
@@ -1094,7 +1093,7 @@
     		var ui = new Edit.ui.Button({
     			name: cmd,
     			className: 'eicon-' + cmd,
-    			title: '',
+    			title: cmd,
     			handles: {
     				click: function() {
     					if (ui.isDisabled()) return;
@@ -1197,7 +1196,7 @@
     		var ui = new Edit.ui.Button({
     			name: cmd,
     			className: 'eicon-' + cmd,
-    			title: '',
+    			title: cmd,
     			handles: {
     				click: function() {
     					if (ui.isDisabled()) return;
@@ -1286,7 +1285,7 @@
     		var ui = new Edit.ui.Button({
     			name: cmd,
     			className: 'eicon-' + cmd,
-    			title: '',
+    			title: cmd,
     			handles: {
     				click: function() {
     					if (ui.isDisabled()) return;
