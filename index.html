@@ -13,7 +13,11 @@
 	</style>
 </head>
 <body>	
-	<div id="editor" class="editor"></div>
+	<div id="editor1" class="editor"></div>
+	<!-- <div id="editor2" class="editor"></div>
+	<div id="editor3" class="editor"></div>
+	<div id="editor4" class="editor"></div>
+	<div id="editor5" class="editor"></div> -->
 	<script src="./assets/js/editor.js"></script>
 	<script>		
 		// Edit.registerUI('summary',function(editor,uiName){
@@ -38,8 +42,13 @@
 		//     });	
 		//     return btn;
 		// });
-		var edit = Edit.getEditor('editor');	
-		console.log(edit)
+		Array.prototype.slice.call(document.querySelectorAll('.editor')).forEach(function(el){
+			var edit = Edit.getEditor(el.getAttribute('id'),{
+				// toolbars: ['insertimage']
+			});	
+			// console.log(edit)
+		})
+		
 	</script>
 </body>
 </html>
