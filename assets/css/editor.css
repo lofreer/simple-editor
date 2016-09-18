@@ -106,6 +106,9 @@
 .edui-state-disabled:hover {
 	background: #fff;
 }
+.edui-state-disabled:hover::after {
+	opacity: 0;
+}
 .edui-state-disabled .eicon {
 	color: #ccc;
 }

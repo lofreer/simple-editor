@@ -308,6 +308,7 @@
 			var fixedlayer = document.getElementById('editor-fixedlayer');
 	    	if (fixedlayer && current !== fixedlayer && !fixedlayer.contains(current)) {
 	    		fixedlayer.parentNode.removeChild(fixedlayer);
+				document.body.style.overflow = 'visible';
 	    	}    
 		},
 		dialogOffset: function(editor) {
@@ -455,7 +456,7 @@
 		},
 		// 初始化菜单栏
 		initToolbar: function(container) {
-			var editor = this;
+			var self = this;
 
 			var toolbars = this.options.toolbars || [];
 			var toolbarUis = [];
@@ -464,23 +465,22 @@
 				if (item == '|') {
 					tool = 'separator';
 				} else {
-					tool = editor.buttons[item];
+					self.buttons[item] = tool = new Edit.ui[item](self);
 				}
 				toolbarUis.push(tool);
 			});
 
-
 			//接受外部定制的UI
             utils.each(Edit.customizeUI,function(obj,key){
                 var tool;               
-                tool = obj.execFn.call(editor,editor,key);
+                tool = obj.execFn.call(self,self,key);
                 if(tool){
-                    editor.buttons[key] = tool;
+                    self.buttons[key] = tool;
                     toolbarUis.push(tool);
                 }
             });
 
-			var toolbar = Edit.ui.createEl('ul',{class:'editor-toolbar'},{click:function(){editor.emit('selectionchange')}});
+			var toolbar = Edit.ui.createEl('ul',{class:'editor-toolbar'},{click:function(){self.emit('selectionchange')}});
 			toolbarUis.forEach(function(item){
 				var tool;
 				if (item == 'separator') {
@@ -772,23 +772,21 @@
 			load: function(editor) {
 				utils.each(_plugins, function(plugin){
 					var _export = plugin.execFn.call(editor);
-					// if (editor.options[plugin.optionName] !== false) {
-						if (_export) {
-							utils.each(_export, function(v,k){
-								switch(k.toLowerCase()) {
-									case 'bindevents':
-										utils.each(v, function(fn, eventName){
-											editor.addListener(eventName, fn);
-										});
-										break;
-									case 'commands': 
-										utils.each(v, function(execfn,execName){
-											editor.commands[execName] = execfn;
-										});
-								}
-							});
-						}
-					// }
+					if (_export) {
+						utils.each(_export, function(v,k){
+							switch(k.toLowerCase()) {
+								case 'bindevents':
+									utils.each(v, function(fn, eventName){
+										editor.addListener(eventName, fn);
+									});
+									break;
+								case 'commands': 
+									utils.each(v, function(execfn,execName){
+										editor.commands[execName] = execfn;
+									});
+							}
+						});
+					}
 				});
 			},
 			run: function(pluginName,editor) {
@@ -810,13 +808,21 @@
 	}	
 
 	// 命令：直接操作式
-	var btnCmds = ['bold', 'heading', 'italic', 'fontsize', 'underline', 'strikethrough', 'removeformat', 'indent', 'outdent', 'quotes', 'insertorderedlist',
-	 'insertunorderedlist', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull'];	
-   
-   	btnCmds.forEach(function(cmd){
-   		Edit.plugin.register(cmd, function(){    		
-	    	var editor = this, commands = {}, bindevents = {};
-    		var ui = editor.buttons[cmd] = new Edit.ui.Button({
+	var btnCmds = ['bold', 'italic', 'underline', 'strikethrough', 'removeformat', 'indent', 'outdent', 'quotes', 'insertorderedlist',
+	 'insertunorderedlist', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull'];		
+    btnCmds.forEach(function(cmd){
+    	Edit.ui[cmd] = function(editor) {
+
+    		editor.commands[cmd] = {
+				execCommand: function() {
+					this.document.execCommand(cmd,false,null);
+				},
+				queryCommandState: function() {
+					return this.document.queryCommandState(cmd);
+				}
+			};
+
+    		var ui = new Edit.ui.Button({
     			name: cmd,
     			className: 'eicon-' + cmd,
     			title: editor.options.lang[cmd],
@@ -825,41 +831,42 @@
 	    				editor.execCommand(cmd);
 	    			}
     			}
-    		}); 
-    		commands[cmd] = {
-    			execCommand: function() {
-					this.document.execCommand(cmd,false,null);
-				},
-				queryCommandState: function() {
-					return this.document.queryCommandState(cmd);
-				}
-    		}  
-    		bindevents = {
-    			selectionchange: function() {
-    				var state = editor.queryCommandState(cmd);
-	    			if (!state) {
-	    				ui.setChecked(false);
-	    			} else {
-	    				ui.setChecked(true);
-	    			}
-    			}
-    		} 
-	    	return {commands:commands, bindevents:bindevents};
-	    });
-   	});
+    		});    		
 
-    
+    		editor.addListener('selectionchange', function(type){
+    			var state = editor.queryCommandState(cmd);
+    			if (!state) {
+    				ui.setChecked(false);
+    			} else {
+    				ui.setChecked(true);
+    			}
+    		});
+    		return ui;
+    	}
+    });
 
     // 命令：字体颜色、背景颜色
     ['forecolor','backcolor'].forEach(function(cmd){
-    	Edit.plugin.register(cmd, function(){
-    		var editor = this, commands = {}, bindevents = {};
+    	Edit.ui[cmd] = function(editor) {
 
-    		var colors = Edit.utils.map(editor.options.colors, function(v,k){
+    		editor.commands[cmd] = {
+				execCommand: function(c,b,v) {
+					this.document.execCommand(c,b,v);					
+				},
+				queryCommandState: function(c,b,v) {
+					return this.document.queryCommandState(c);
+				},
+				queryCommandValue: function(c,b,v) {
+					return this.document.queryCommandValue(c);
+				}
+			};
+
+			var colors = Edit.utils.map(editor.options.colors, function(v,k){
 				var color = Edit.utils.parseColor(v);
 				return 'rgb('+color.r+','+color.g+','+color.b+')'; 
 			});
-    		var ui = editor.buttons[cmd] = new Edit.ui.Button({
+
+    		var ui = new Edit.ui.Button({
     			name: cmd,
     			className: 'eicon-' + cmd,
     			title: editor.options.lang[cmd],
@@ -875,10 +882,71 @@
 		    			menu.show();
 	    			}
     			}
-    		});  
-    		commands[cmd] = {
+    		});    		
+
+    		editor.addListener('selectionchange', function(type){
+    			var state = editor.queryCommandValue(cmd);      			
+				if (colors.indexOf(state.replace(/\s+/g,'')) != -1) {
+					ui.setChecked(true);
+				} else {
+					ui.setChecked(false);
+				}		
+    		});
+    		return ui;
+    	}
+    });
+
+    // 命令：标题 h1-h6
+    ['heading'].forEach(function(cmd){
+    	Edit.ui[cmd] = function(editor) {    		
+    		editor.commands[cmd] = {
 				execCommand: function(c,b,v) {
-					this.document.execCommand(c,b,v);					
+					this.document.execCommand('formatblock',b,v);
+				},
+				queryCommandState: function(c,b,v) {
+					return this.document.queryCommandState('formatblock');
+				},
+				queryCommandValue: function(c,b,v) {
+					return this.document.queryCommandValue('formatblock');
+				}
+			};
+
+    		var ui = new Edit.ui.Button({
+    			name: cmd,
+    			className: 'eicon-' + cmd,
+    			title: editor.options.lang[cmd],
+    			handles: {
+    				click: function() {
+    					if (ui.isDisabled()) return;
+	    				var self = this;
+		    			var menu = new Edit.ui.Menu({
+				    		content: Edit.ui.createEl('ul',{class:'menu-list',style:Edit.ui.getPanelOffset(self.id)},Edit.utils.map(editor.options[cmd+'s'],function(val,key){
+				    			return Edit.ui.createEl('li',{class:'menu-item',title:key},[Edit.ui.createEl(val,[key])],{click:function(ev){editor.execCommand(cmd,false,val);Edit.ui.closePopup();}})
+				    		}))
+				    	});
+		    			menu.show();
+	    			}
+    			}
+    		});    		
+
+    		editor.addListener('selectionchange', function(type){
+    			var state = editor.queryCommandValue(cmd);
+    			if (!/h+/.test(state)) {
+    				ui.setChecked(false);
+    			} else {
+    				ui.setChecked(true);
+    			}
+    		});
+    		return ui;
+    	}
+    });
+
+    // 命令：字体名称
+    ['fontname'].forEach(function(cmd){
+    	Edit.ui[cmd] = function(editor) {    		
+    		editor.commands[cmd] = {
+				execCommand: function(c,b,v) {
+					this.document.execCommand(c,b,v);
 				},
 				queryCommandState: function(c,b,v) {
 					return this.document.queryCommandState(c);
@@ -887,226 +955,155 @@
 					return this.document.queryCommandValue(c);
 				}
 			};
-			bindevents = {
-				selectionchange: function(){
-					var state = editor.queryCommandValue(cmd);  
-					if (colors.indexOf(state.replace(/\s+/g,'')) != -1) {
-						ui.setChecked(true);
-					} else {
-						ui.setChecked(false);
-					}		
-				}
-			};
-    		return {commands:commands, bindevents:bindevents};
-    	});    	
-    });
 
-	// 命令：标题 h1-h6
-    Edit.plugin.register('heading', function(){
-    	var editor = this, commands = {}, bindevents = {};
-
-    	var ui = editor.buttons['heading'] = new Edit.ui.Button({
-			name: 'heading',
-			className: 'eicon-' + 'heading',
-			title: editor.options.lang['heading'],
-			handles: {
-				click: function() {
-					if (ui.isDisabled()) return;
-    				var self = this;
-	    			var menu = new Edit.ui.Menu({
-			    		content: Edit.ui.createEl('ul',{class:'menu-list',style:Edit.ui.getPanelOffset(self.id)},Edit.utils.map(editor.options['heading'+'s'],function(val,key){
-			    			return Edit.ui.createEl('li',{class:'menu-item',title:key},[Edit.ui.createEl(val,[key])],{click:function(ev){editor.execCommand('heading',false,val);Edit.ui.closePopup();}})
-			    		}))
-			    	});
-	    			menu.show();
+    		var ui = new Edit.ui.Button({
+    			name: cmd,
+    			className: 'eicon-' + cmd,
+    			title: editor.options.lang[cmd],
+    			handles: {
+    				click: function() {
+    					if (ui.isDisabled()) return;
+	    				var self = this;
+		    			var menu = new Edit.ui.Menu({
+				    		content: Edit.ui.createEl('ul',{class:'menu-list',style:Edit.ui.getPanelOffset(self.id)},Edit.utils.map(editor.options[cmd+'s'],function(val,key){
+				    			return Edit.ui.createEl('li',{class:'menu-item',title:val},[Edit.ui.createEl('span',{style:'font-family:'+val+''},[val])],{click:function(ev){editor.execCommand(cmd,false,val);Edit.ui.closePopup();}})
+				    		}))
+				    	});
+		    			menu.show();
+	    			}
     			}
-			}
-		});    		
+    		});    		
 
-    	commands['heading'] = {
-			execCommand: function(c,b,v) {
-				this.document.execCommand('formatblock',b,v);
-			},
-			queryCommandState: function(c,b,v) {
-				return this.document.queryCommandState('formatblock');
-			},
-			queryCommandValue: function(c,b,v) {
-				return this.document.queryCommandValue('formatblock');
-			}
-		};
-
-		bindevents = {
-			selectionchange: function(type){
-    			var state = editor.queryCommandValue('heading');
-    			if (!/h+/.test(state)) {
-    				ui.setChecked(false);
-    			} else {
-    				ui.setChecked(true);
-    			}
-    		}
-		};
-		return {commands:commands, bindevents:bindevents};
-    });  
-
-    // 命令：字体名称
-    Edit.plugin.register('fontname', function(){
-    	var editor = this, commands = {}, bindevents = {};
-
-    	var ui = editor.buttons['fontname'] = new Edit.ui.Button({
-			name: 'fontname',
-			className: 'eicon-' + 'fontname',
-			title: editor.options.lang['fontname'],
-			handles: {
-				click: function() {
-					if (ui.isDisabled()) return;
-    				var self = this;
-	    			var menu = new Edit.ui.Menu({
-			    		content: Edit.ui.createEl('ul',{class:'menu-list',style:Edit.ui.getPanelOffset(self.id)},Edit.utils.map(editor.options['fontname'+'s'],function(val,key){
-			    			return Edit.ui.createEl('li',{class:'menu-item',title:val},[Edit.ui.createEl('span',{style:'font-family:'+val+''},[val])],{click:function(ev){editor.execCommand('fontname',false,val);Edit.ui.closePopup();}})
-			    		}))
-			    	});
-	    			menu.show();
-    			}
-			}
-		}); 
-		commands['fontname'] = {
-			execCommand: function(c,b,v) {
-				this.document.execCommand(c,b,v);
-			},
-			queryCommandState: function(c,b,v) {
-				return this.document.queryCommandState(c);
-			},
-			queryCommandValue: function(c,b,v) {
-				return this.document.queryCommandValue(c);
-			}
-		};	
-		bindevents = {
-			selectionchange: function(){
-    			var state = editor.queryCommandValue('fontname');
+    		editor.addListener('selectionchange', function(type){
+    			var state = editor.queryCommandValue(cmd);
     			if (state === 'sans-serif') {
     				ui.setChecked(false);
     			} else {
     				ui.setChecked(true);
     			}
-    		}
-		}
-		return {commands:commands, bindevents:bindevents};
-    });   
+    		});
+    		return ui;
+    	}
+    });
 
     // 命令：字体大小
-    Edit.plugin.register('fontsize', function(){
-    	var editor = this, commands = {}, bindevents = {};
+    ['fontsize'].forEach(function(cmd){
+    	Edit.ui[cmd] = function(editor) {    		
+    		editor.commands[cmd] = {
+				execCommand: function(c,b,v) {
+					this.document.execCommand(c,b,v);
+				},
+				queryCommandState: function(c,b,v) {
+					return this.document.queryCommandState(c);
+				},
+				queryCommandValue: function(c,b,v) {
+					return this.document.queryCommandValue(c);
+				}
+			};
 
-    	var sizes = Edit.utils.map(editor.options.fontsizes, function(v,k){
-			return v+'';
-		});
-    	var ui = editor.buttons['fontsize'] = new Edit.ui.Button({
-			name: 'fontsize',
-			className: 'eicon-' + 'fontsize',
-			title: editor.options.lang['fontsize'],
-			handles: {
-				click: function() {
-					if (ui.isDisabled()) return;
-    				var self = this;
-	    			var menu = new Edit.ui.Menu({
-			    		content: Edit.ui.createEl('ul',{class:'menu-list',style:Edit.ui.getPanelOffset(self.id)},Edit.utils.map(editor.options['fontsize'+'s'],function(val,key){
-			    			return Edit.ui.createEl('li',{class:'menu-item',title:key,style:'font-size:'+key},[key],{click:function(ev){editor.execCommand('fontsize',false,val);Edit.ui.closePopup();}})
-			    		}))
-			    	});
-	    			menu.show();
+			var sizes = Edit.utils.map(editor.options.fontsizes, function(v,k){
+				return v+'';
+			});
+
+    		var ui = new Edit.ui.Button({
+    			name: cmd,
+    			className: 'eicon-' + cmd,
+    			title: editor.options.lang[cmd],
+    			handles: {
+    				click: function() {
+    					if (ui.isDisabled()) return;
+	    				var self = this;
+		    			var menu = new Edit.ui.Menu({
+				    		content: Edit.ui.createEl('ul',{class:'menu-list',style:Edit.ui.getPanelOffset(self.id)},Edit.utils.map(editor.options[cmd+'s'],function(val,key){
+				    			return Edit.ui.createEl('li',{class:'menu-item',title:key,style:'font-size:'+key},[key],{click:function(ev){editor.execCommand(cmd,false,val);Edit.ui.closePopup();}})
+				    		}))
+				    	});
+		    			menu.show();
+	    			}
     			}
-			}
-		});    		
-		commands['fontsize'] = {
-			execCommand: function(c,b,v) {
-				this.document.execCommand(c,b,v);
-			},
-			queryCommandState: function(c,b,v) {
-				return this.document.queryCommandState(c);
-			},
-			queryCommandValue: function(c,b,v) {
-				return this.document.queryCommandValue(c);
-			}
-		};	
-		bindevents = {
-			selectionchange: function(){
-    			var state = editor.queryCommandValue('fontsize');
+    		});    		
+
+    		editor.addListener('selectionchange', function(type){
+    			var state = editor.queryCommandValue(cmd);
     			if (sizes.indexOf(state) != -1) {
     				ui.setChecked(true);
     			} else {
     				ui.setChecked(false);
     			}
-    		}
-		}
-		return {commands:commands, bindevents:bindevents};
-    });   
+    		});
+    		return ui;
+    	}
+    }); 
 
     // 命令：显示源码
-    Edit.plugin.register('code', function(){
-    	var editor = this;
-    	var ui = editor.buttons['code'] = new Edit.ui.Button({
-			name: 'code',
-			className: 'eicon-' + 'code',
-			title: editor.options.lang['code'],
-			handles: {
-				click: function() {
-					if (ui.isDisabled()) return;
-    				if (!ui.isChecked()) {
-    					editor.saveSelection();
-    					editor.body.contentEditable = false;
-    					editor.body.textContent = editor.body.innerHTML;
-    					ui.setChecked(true);
-    					Edit.utils.each(editor.buttons,function(v,k){
-    						if (v != ui) {
-    							v.setDisabled(true);
-    						}
-    					});
-    				} else {
-    					editor.body.innerHTML = editor.body.textContent;
-    					editor.body.contentEditable = true;
-    					ui.setChecked(false);
-    					editor.restoreSelection();
-    					editor.body.focus();
-    					Edit.utils.each(editor.buttons,function(v,k){
-    						if (v != ui) {
-    							v.setDisabled(false);
-    						}
-    					});
-    				}
+    ['code'].forEach(function(cmd){
+    	Edit.ui[cmd] = function(editor) {    		
+
+    		var ui = new Edit.ui.Button({
+    			name: cmd,
+    			className: 'eicon-' + cmd,
+    			title: editor.options.lang[cmd],
+    			handles: {
+    				click: function() {
+    					if (ui.isDisabled()) return;
+	    				if (!ui.isChecked()) {
+	    					editor.saveSelection();
+	    					editor.body.contentEditable = false;
+	    					editor.body.textContent = editor.body.innerHTML;
+	    					ui.setChecked(true);
+	    					Edit.utils.each(editor.buttons,function(v,k){
+	    						if (v != ui) {
+	    							v.setDisabled(true);
+	    						}
+	    					});
+	    				} else {
+	    					editor.body.innerHTML = editor.body.textContent;
+	    					editor.body.contentEditable = true;
+	    					ui.setChecked(false);
+	    					editor.restoreSelection();
+	    					editor.body.focus();
+	    					Edit.utils.each(editor.buttons,function(v,k){
+	    						if (v != ui) {
+	    							v.setDisabled(false);
+	    						}
+	    					});
+	    				}
+	    			}
     			}
-			}
-		}); 
-    });   
+    		}); 
+    		return ui;
+    	}
+    }); 
  
     // 命令：插入代码
-    Edit.plugin.register('insertcode', function(){
-    	var editor = this, commands = {}, bindevents = {};
+    ['insertcode'].forEach(function(cmd){
+    	Edit.ui[cmd] = function(editor) {    		
+    		editor.commands[cmd] = {
+				execCommand: function(c,v) {
+					this.execCommand('inserthtml',v);
+				},
+				queryCommandState: function(c,b,v) {
+					return this.document.queryCommandState(c);
+				},
+				queryCommandValue: function(c,b,v) {
+					return this.document.queryCommandValue(c);
+				}
+			};
 
-    	var ui = editor.buttons['insertcode'] = new Edit.ui.Button({
-			name: 'insertcode',
-			className: 'eicon-' + 'insertcode',
-			title: editor.options.lang['insertcode'],
-			handles: {
-				click: function() {
-					if (ui.isDisabled()) return;
-    				editor.execCommand('insertcode','<h2>h2h2</h2>');
+    		var ui = new Edit.ui.Button({
+    			name: cmd,
+    			className: 'eicon-' + cmd,
+    			title: editor.options.lang[cmd],
+    			handles: {
+    				click: function() {
+    					if (ui.isDisabled()) return;
+	    				editor.execCommand(cmd,'<h2>h2h2</h2>');
+	    			}
     			}
-			}
-		}); 
-		commands['insertcode'] = {
-			execCommand: function(c,v) {
-				this.execCommand('inserthtml',v);
-			},
-			queryCommandState: function(c,b,v) {
-				return this.document.queryCommandState(c);
-			},
-			queryCommandValue: function(c,b,v) {
-				return this.document.queryCommandValue(c);
-			}
-		};   	
-		bindevents = {
-			selectionchange: function(type){
-    			var state = editor.queryCommandValue('insertcode');
+    		});    		
+
+    		editor.addListener('selectionchange', function(type){
+    			var state = editor.queryCommandValue(cmd);
     			if (!state) {
     				ui.setChecked(false);
     				// ui.setDisabled(true);
@@ -1114,171 +1111,67 @@
     				ui.setChecked(true);
     				// ui.setDisabled(false);
     			}
-    		}
-		}
-		return {commands:commands, bindevents:bindevents};
-    })
-   
+    		});
+    		return ui;
+    	}
+    }); 
+
     // 命令：创建链接
-    Edit.plugin.register('createlink', function(){
-    	var editor = this, commands = {}, bindevents = {};
+    ['createlink'].forEach(function(cmd){
+    	Edit.ui[cmd] = function(editor) {    		
+    		editor.commands[cmd] = {
+				execCommand: function(c,b,v) {
+					this.document.execCommand(c,b,v);
+				},
+				queryCommandState: function(c,b,v) {
+					return this.document.queryCommandState(c);
+				},
+				queryCommandValue: function(c,b,v) {
+					return this.document.queryCommandValue(c);
+				}
+			};
 
-    	var ui = editor.buttons['createlink'] = new Edit.ui.Button({
-			name: 'createlink',
-			className: 'eicon-' + 'createlink',
-			title: editor.options.lang['createlink'],
-			handles: {
-				click: function() {
-					if (ui.isDisabled()) return;
-    				var self = this;
-    				var ce = Edit.ui.createEl;
-	    			var menu = new Edit.ui.Menu({
-			    		content: ce('div',{class:'eui-dialog',style:Edit.ui.getPanelOffset(self.id)},[
-			    			ce('div',{class:'panel-box'},[					    			
-				    			ce('div',{class:'panel-content'},[	
-			    					ce('input',{id:'input-link',class:'input-text',type:'text',placeholder:'http://'}),
-			    					ce('div',{class:'panel-handles'},[
-			    						ce('span',{class:'panel-cancel'},['取消'],{click:function(){Edit.ui.closePopup()}}),
-			    						ce('span',{class:'panel-confirm'},['确定'],{click:insertLink})					    					
-				    				])
-				    			])
-				    		])
-			    		])
-			    	});
-	    			menu.show();
-	    			Edit.ui.dialogOffset(editor);
-	    			setTimeout(function(){
-							document.getElementById('input-link').focus();
-						},0);
-    			}
-			}
-		}); 
-		commands['createlink'] = {
-			execCommand: function(c,b,v) {
-				this.document.execCommand(c,b,v);
-			},
-			queryCommandState: function(c,b,v) {
-				return this.document.queryCommandState(c);
-			},
-			queryCommandValue: function(c,b,v) {
-				return this.document.queryCommandValue(c);
-			}
-		};   		
-		bindevents = {
-			selectionchange: function(){
-    			var state = editor.queryCommandValue('createlink');
-    			if (!state) {
-    				ui.setChecked(false);
-    				// ui.setDisabled(true);
-    			} else {
-    				ui.setChecked(true);
-    				// ui.setDisabled(false);
-    			}
-    		}
-		};
-		return {commands:commands, bindevents:bindevents};
-    });
-
-    // 命令：插入图片
-    Edit.plugin.register('insertimage', function(){
-    	var editor = this, commands = {}, bindevents = {};
-
-    	function sendAndInsertFile(ev) {
-			var file = this.files[0];
-			var rFilter = /^(image\/bmp|image\/gif|image\/jpeg|image\/png|image\/jpg)$/i;
-			var url = 'http://www.daily.bookln.cn/comm/file/upload.do';
-			var loadingId = 'loading_' + (+new Date()).toString(36);
-			var Form = new FormData();
-			Form.append('file', file);
-			editor.execCommand('inserthtml', '<img id="'+ loadingId +'" src="assets/images/loading.gif">');
-			if (rFilter.test(file.type)) {
-				Edit.Ajax(url,'post',Form,function(cb){
-					var loader = editor.document.getElementById(loadingId);
-					loader.setAttribute('src',cb.data.url);
-					loader.removeAttribute('id');
+			function insertLink() {
+				var href = document.getElementById('input-link').value;
+				if (href) {
+					editor.execCommand(cmd,false,href);
 					Edit.ui.closePopup();
-				})
+				}
 			}
-		}
 
-		function insertImg() {
-			var src = document.getElementById('input-src').value;
-			if (src) {
-				editor.execCommand('inserthtml', '<img src="'+ src +'">');
-				Edit.ui.closePopup();
-			}
-		}
-
-		function insertImgEvent() {
-			var labs = Array.prototype.slice.call(document.querySelectorAll('.panel-tab-btn'));
-			labs.forEach(function(item){
-				item.addEventListener('click',function(){
-					labs.forEach(function(i){
-						i.classList.remove('selected');
-					})
-					this.classList.add('selected');
-					if (this.getAttribute('for') === 'img-url') {
-						setTimeout(function(){
-							document.getElementById('input-src').focus();
-						},0);
-					}
-				})
-			});				
-		}
-
-    	var ui = editor.buttons['insertimage'] = new Edit.ui.Button({
-			name: 'insertimage',
-			className: 'eicon-' + 'insertimage',
-			title: editor.options.lang['insertimage'],
-			handles: {
-				click: function() {
-					if (editor.buttons['insertimage'].isDisabled()) return;
-    				var self = this;
-    				var ce = Edit.ui.createEl;
-	    			var menu = new Edit.ui.Menu({
-			    		content: ce('div',{class:'eui-dialog',style:Edit.ui.getPanelOffset(self.id)},[
-			    			ce('div',{class:'panel-box'},[
-				    			ce('div',{class:'label-box'},[
-				    				ce('label',{class:'panel-tab-btn selected', for: 'img-file'},['上传图片']),
-				    				ce('label',{class:'panel-tab-btn', for: 'img-url'},['网络图片'])
-				    			]),
-				    			ce('div',{class:'panel-content'},[
-				    				ce('input',{class:'panel-tab-radio',id:'img-file',type:'radio',name:'radio',checked:true}),
-				    				ce('div',{class:'panel-tab-content'},[
-				    					ce('label',{class:'eicon eicon-upload',for:'upload'}),
-				    					ce('input',{id:'upload',class:'upload',type:'file'},{change:sendAndInsertFile})
-				    				]),
-				    				ce('input',{class:'panel-tab-radio',id:'img-url',type:'radio',name:'radio'}),
-				    				ce('div',{class:'panel-tab-content'},[
-				    					ce('input',{id:'input-src',class:'input-text',type:'text',placeholder:'http://'}),
+    		var ui = new Edit.ui.Button({
+    			name: cmd,
+    			className: 'eicon-' + cmd,
+    			title: editor.options.lang[cmd],
+    			handles: {
+    				click: function() {
+    					if (ui.isDisabled()) return;
+	    				var self = this;
+	    				var ce = Edit.ui.createEl;
+		    			var menu = new Edit.ui.Menu({
+				    		content: ce('div',{class:'eui-dialog',style:Edit.ui.getPanelOffset(self.id)},[
+				    			ce('div',{class:'panel-box'},[					    			
+					    			ce('div',{class:'panel-content'},[	
+				    					ce('input',{id:'input-link',class:'input-text',type:'text',placeholder:'http://'}),
 				    					ce('div',{class:'panel-handles'},[
 				    						ce('span',{class:'panel-cancel'},['取消'],{click:function(){Edit.ui.closePopup()}}),
-				    						ce('span',{class:'panel-confirm'},['确定'],{click:insertImg})
-				    					])
-				    				])
-				    			])
+				    						ce('span',{class:'panel-confirm'},['确定'],{click:insertLink})					    					
+					    				])
+					    			])
+					    		])
 				    		])
-			    		])
-			    	});
-	    			menu.show(insertImgEvent);
-	    			Edit.ui.dialogOffset(editor);
+				    	});
+		    			menu.show();
+		    			Edit.ui.dialogOffset(editor);
+		    			setTimeout(function(){
+								document.getElementById('input-link').focus();
+							},0);
+	    			}
     			}
-			}
-		});    	
-		commands['insertimage'] = {
-			execCommand: function(c,v) {
-				this.execCommand('inserthtml',v);
-			},
-			queryCommandState: function(c,b,v) {
-				return this.document.queryCommandState(c);
-			},
-			queryCommandValue: function(c,b,v) {
-				return this.document.queryCommandValue(c);
-			}
-		};
-		bindevents = {
-			selectionchange: function(){
-				var state = editor.queryCommandValue('insertimage');
+    		});    		
+
+    		editor.addListener('selectionchange', function(type){
+    			var state = editor.queryCommandValue(cmd);
     			if (!state) {
     				ui.setChecked(false);
     				// ui.setDisabled(true);
@@ -1286,80 +1179,191 @@
     				ui.setChecked(true);
     				// ui.setDisabled(false);
     			}
-			}
-		};
-		return {commands:commands, bindevents:bindevents};
+    		});
+    		return ui;
+    	}
+    }); 
 
-    });
+    // 命令：插入图片
+    ['insertimage'].forEach(function(cmd){
+    	Edit.ui[cmd] = function(editor) {    		
+    		editor.commands[cmd] = {
+				execCommand: function(c,v) {
+					this.execCommand('inserthtml',v);
+				},
+				queryCommandState: function(c,b,v) {
+					return this.document.queryCommandState(c);
+				},
+				queryCommandValue: function(c,b,v) {
+					return this.document.queryCommandValue(c);
+				}
+			};
+
+			function sendAndInsertFile(ev) {
+				var file = this.files[0];
+				var rFilter = /^(image\/bmp|image\/gif|image\/jpeg|image\/png|image\/jpg)$/i;
+    			var url = 'http://www.daily.bookln.cn/comm/file/upload.do';
+    			var loadingId = 'loading_' + (+new Date()).toString(36);
+    			var Form = new FormData();
+    			Form.append('file', file);
+    			editor.execCommand('inserthtml', '<img id="'+ loadingId +'" src="assets/images/loading.gif">');
+    			if (rFilter.test(file.type)) {
+    				Edit.Ajax(url,'post',Form,function(cb){
+    					var loader = editor.document.getElementById(loadingId);
+						loader.setAttribute('src',cb.data.url);
+						loader.removeAttribute('id');
+    					Edit.ui.closePopup();
+    				})
+    			}
+			}
+
+			function insertImg() {
+				var src = document.getElementById('input-src').value;
+				if (src) {
+					editor.execCommand('inserthtml', '<img src="'+ src +'">');
+					Edit.ui.closePopup();
+				}
+			}
+
+			function insertImgEvent() {
+				var labs = Array.prototype.slice.call(document.querySelectorAll('.panel-tab-btn'));
+				labs.forEach(function(item){
+					item.addEventListener('click',function(){
+						labs.forEach(function(i){
+							i.classList.remove('selected');
+						})
+						this.classList.add('selected');
+						if (this.getAttribute('for') === 'img-url') {
+							setTimeout(function(){
+								document.getElementById('input-src').focus();
+							},0);
+						}
+					})
+				});				
+			}
+
+    		var ui = new Edit.ui.Button({
+    			name: cmd,
+    			className: 'eicon-' + cmd,
+    			title: editor.options.lang[cmd],
+    			handles: {
+    				click: function() {
+    					if (ui.isDisabled()) return;
+	    				var self = this;
+	    				var ce = Edit.ui.createEl;
+		    			var menu = new Edit.ui.Menu({
+				    		content: ce('div',{class:'eui-dialog',style:Edit.ui.getPanelOffset(self.id)},[
+				    			ce('div',{class:'panel-box'},[
+					    			ce('div',{class:'label-box'},[
+					    				ce('label',{class:'panel-tab-btn selected', for: 'img-file'},['上传图片']),
+					    				ce('label',{class:'panel-tab-btn', for: 'img-url'},['网络图片'])
+					    			]),
+					    			ce('div',{class:'panel-content'},[
+					    				ce('input',{class:'panel-tab-radio',id:'img-file',type:'radio',name:'radio',checked:true}),
+					    				ce('div',{class:'panel-tab-content'},[
+					    					ce('label',{class:'eicon eicon-upload',for:'upload'}),
+					    					ce('input',{id:'upload',class:'upload',type:'file'},{change:sendAndInsertFile})
+					    				]),
+					    				ce('input',{class:'panel-tab-radio',id:'img-url',type:'radio',name:'radio'}),
+					    				ce('div',{class:'panel-tab-content'},[
+					    					ce('input',{id:'input-src',class:'input-text',type:'text',placeholder:'http://'}),
+					    					ce('div',{class:'panel-handles'},[
+					    						ce('span',{class:'panel-cancel'},['取消'],{click:function(){Edit.ui.closePopup()}}),
+					    						ce('span',{class:'panel-confirm'},['确定'],{click:insertImg})
+					    					])
+					    				])
+					    			])
+					    		])
+				    		])
+				    	});
+		    			menu.show(insertImgEvent);
+		    			Edit.ui.dialogOffset(editor);
+	    			}
+    			}
+    		});    		
+
+    		editor.addListener('selectionchange', function(type){
+    			var state = editor.queryCommandValue(cmd);
+    			if (!state) {
+    				ui.setChecked(false);
+    				// ui.setDisabled(true);
+    			} else {
+    				ui.setChecked(true);
+    				// ui.setDisabled(false);
+    			}
+    		});
+    		return ui;
+    	}
+    }); 
 
     // 命令：插入视频
-    Edit.plugin.register('insertvideo', function(){
-    	var editor = this, commands = {}, bindevents = {};
+    ['insertvideo'].forEach(function(cmd){
+    	Edit.ui[cmd] = function(editor) {    		
+    		editor.commands[cmd] = {
+				execCommand: function(c,v) {
+					this.execCommand('inserthtml',v);
+				},
+				queryCommandState: function(c,b,v) {
+					return this.document.queryCommandState(c);
+				},
+				queryCommandValue: function(c,b,v) {
+					return this.document.queryCommandValue(c);
+				}
+			};
 
-    	var video = [
-						'<video width="320" height="240" controls autoplay>',
-						  	'<source src="http://www.runoob.com/try/demo_source/movie.ogg" type="video/ogg">',
-						  	'<source src="http://www.runoob.com/try/demo_source/movie.mp4" type="video/mp4">',
-						  	'<source src="http://www.runoob.com/try/demo_source/movie.webm" type="video/webm">',
-						  	'<object data="http://www.runoob.com/try/demo_source/movie.mp4" width="320" height="240">',
-							    '<embed width="320" height="240" src="http://www.runoob.com/try/demo_source/movie.swf">',
-							'</object>',
-						'</video>'
-					].join('')
+			var video = [
+							'<video width="320" height="240" controls autoplay>',
+							  	'<source src="http://www.runoob.com/try/demo_source/movie.ogg" type="video/ogg">',
+							  	'<source src="http://www.runoob.com/try/demo_source/movie.mp4" type="video/mp4">',
+							  	'<source src="http://www.runoob.com/try/demo_source/movie.webm" type="video/webm">',
+							  	'<object data="http://www.runoob.com/try/demo_source/movie.mp4" width="320" height="240">',
+								    '<embed width="320" height="240" src="http://www.runoob.com/try/demo_source/movie.swf">',
+								'</object>',
+							'</video>'
+						].join('')
 
 
-		function insertLink() {
-			var src = document.getElementById('input-link').value;
-			if (src) {
-				editor.execCommand(cmd,video);
-				Edit.ui.closePopup();
+			function insertLink() {
+				var src = document.getElementById('input-link').value;
+				if (src) {
+					editor.execCommand(cmd,video);
+					Edit.ui.closePopup();
+				}
 			}
-		}
 
-    	var ui = editor.buttons['insertvideo'] = new Edit.ui.Button({
-			name: 'insertvideo',
-			className: 'eicon-' + 'insertvideo',
-			title: editor.options.lang['insertvideo'],
-			handles: {
-				click: function() {
-					if (ui.isDisabled()) return;
-    				var self = this;
-    				var ce = Edit.ui.createEl;
-	    			var menu = new Edit.ui.Menu({
-			    		content: ce('div',{class:'eui-dialog',style:Edit.ui.getPanelOffset(self.id)},[
-			    			ce('div',{class:'panel-box'},[					    			
-				    			ce('div',{class:'panel-content'},[	
-			    					ce('input',{id:'input-link',class:'input-text',type:'text',placeholder:'http://'}),
-			    					ce('div',{class:'panel-handles'},[
-			    						ce('span',{class:'panel-cancel'},['取消'],{click:function(){Edit.ui.closePopup()}}),
-			    						ce('span',{class:'panel-confirm'},['确定'],{click:insertLink})					    					
-				    				])
-				    			])
+    		var ui = new Edit.ui.Button({
+    			name: cmd,
+    			className: 'eicon-' + cmd,
+    			title: editor.options.lang[cmd],
+    			handles: {
+    				click: function() {
+    					if (ui.isDisabled()) return;
+	    				var self = this;
+	    				var ce = Edit.ui.createEl;
+		    			var menu = new Edit.ui.Menu({
+				    		content: ce('div',{class:'eui-dialog',style:Edit.ui.getPanelOffset(self.id)},[
+				    			ce('div',{class:'panel-box'},[					    			
+					    			ce('div',{class:'panel-content'},[	
+				    					ce('input',{id:'input-link',class:'input-text',type:'text',placeholder:'http://'}),
+				    					ce('div',{class:'panel-handles'},[
+				    						ce('span',{class:'panel-cancel'},['取消'],{click:function(){Edit.ui.closePopup()}}),
+				    						ce('span',{class:'panel-confirm'},['确定'],{click:insertLink})					    					
+					    				])
+					    			])
+					    		])
 				    		])
-			    		])
-			    	});
-	    			menu.show();
-	    			Edit.ui.dialogOffset(editor);
-	    			setTimeout(function(){
-							document.getElementById('input-link').focus();
-						},0);
+				    	});
+		    			menu.show();
+		    			Edit.ui.dialogOffset(editor);
+		    			setTimeout(function(){
+								document.getElementById('input-link').focus();
+							},0);
+	    			}
     			}
-			}
-		});    		
-		commands['insertvideo'] = {
-			execCommand: function(c,v) {
-				this.execCommand('inserthtml',v);
-			},
-			queryCommandState: function(c,b,v) {
-				return this.document.queryCommandState(c);
-			},
-			queryCommandValue: function(c,b,v) {
-				return this.document.queryCommandValue(c);
-			}
-		};
-		bindevents = {
-			selectionchange: function(type){
-    			var state = editor.queryCommandValue('insertvideo');
+    		});    		
+
+    		editor.addListener('selectionchange', function(type){
+    			var state = editor.queryCommandValue(cmd);
     			if (!state) {
     				ui.setChecked(false);
     				// ui.setDisabled(true);
@@ -1367,9 +1371,9 @@
     				ui.setChecked(true);
     				// ui.setDisabled(false);
     			}
-    		}
-		}
-		return {commands:commands, bindevents:bindevents};
+    		});
+    		return ui;
+    	}
     });
 
     // 拓展：粘贴图片
@@ -1397,7 +1401,7 @@
 	    }
 
 	    return {
-	    	bindEvents:{
+	    	 bindEvents:{
 	            //插入粘贴板的图片，拖放插入图片
 	            'ready':function(e){
 	                var self = this;
@@ -1441,6 +1445,5 @@
 	        }
 	    }
     });
-
 })();
 

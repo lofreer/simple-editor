@@ -14,10 +14,28 @@
 </head>
 <body>	
 	<div id="editor1" class="editor"></div>
-	<!-- <div id="editor2" class="editor"></div>
+	<div id="editor2" class="editor"></div>
 	<div id="editor3" class="editor"></div>
 	<div id="editor4" class="editor"></div>
-	<div id="editor5" class="editor"></div> -->
+	<div id="editor5" class="editor"></div> 
+	<div id="editor6" class="editor"></div>
+	<div id="editor7" class="editor"></div>
+	<div id="editor8" class="editor"></div>
+	<div id="editor9" class="editor"></div> 
+	<div id="editor10" class="editor"></div>
+	<div id="editor11" class="editor"></div>
+	<div id="editor12" class="editor"></div>
+	<div id="editor13" class="editor"></div> 
+	<div id="editor14" class="editor"></div> 
+	<div id="editor15" class="editor"></div>
+	<div id="editor16" class="editor"></div>
+	<div id="editor17" class="editor"></div>
+	<div id="editor18" class="editor"></div> 
+	<div id="editor19" class="editor"></div> 
+	<div id="editor20" class="editor"></div>
+	<div id="editor21" class="editor"></div>
+	<div id="editor22" class="editor"></div>
+	<div id="editor23" class="editor"></div> 
 	<script src="./assets/js/editor.js"></script>
 	<script>		
 		// Edit.registerUI('summary',function(editor,uiName){
@@ -42,11 +60,15 @@
 		//     });	
 		//     return btn;
 		// });
+		var options = ['code', '|', 'bold', 'italic', 'underline', 'strikethrough', 'forecolor', 'backcolor', 'removeformat', '|', 'quotes', 'fontname', 'fontsize', 'heading', 'indent', 'outdent', 
+		'insertorderedlist', 'insertunorderedlist', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|', 'createlink', 'insertimage', 'insertvideo', 'insertcode'];
+		
 		Array.prototype.slice.call(document.querySelectorAll('.editor')).forEach(function(el){
 			var edit = Edit.getEditor(el.getAttribute('id'),{
-				// toolbars: ['insertimage']
+				toolbars: options
 			});	
-			// console.log(edit)
+			options.pop();
+			console.log(edit)
 		})
 		
 	</script>
