@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>超轻富文本编辑器</title>
+	<title>Simple-editor example</title>
 	<link rel="stylesheet" href="../lib/css/editor.css">
 	<style>	
 		body {
@@ -12,6 +12,10 @@
 			width: 750px;
 			height: 300px;
 			margin: 50px auto;
+		}
+		.handlers {
+			width: 750px;
+			margin: 0 auto;
 		}
 		.handlers .btn {
 			display: inline-block;
@@ -86,7 +90,15 @@
 		// 	options.pop();
 		// 	console.log(edit)
 		// });
-		var editor = Edit.getEditor('editor1');
+		var editor = Edit.getEditor('editor1', {
+			resize: true
+		});
+		
+		editor.addListener('click', function(e){
+			console.log(e)
+			console.log(this)
+		})
+
 		var btn = document.querySelector('.getContent');
 		btn.onclick = function(){
 			console.log(editor.getContentTxt())
