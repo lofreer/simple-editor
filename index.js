@@ -1,1 +1,1 @@
-module.exports = require("./lib/js/editor.js");
+module.exports = require("./lib/js/editor.min.js");
