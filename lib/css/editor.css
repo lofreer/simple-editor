@@ -129,6 +129,9 @@
 	background: #dfdfdf;
 	margin: 0 4px;
 }
+.editor-space {
+	display: inline-block;
+}
 
 #editor-fixedlayer {
 	position: fixed;
@@ -180,7 +183,7 @@
 	cursor: pointer;
 	padding: 5px;
 	margin: 0 5px;
-	border-bottom: 2px solid transparent;
+	border-bottom: 1px solid transparent;
 	transition: all .2s;
 }
 .panel-tab-btn.selected {
@@ -218,6 +221,10 @@
 .panel-cancel {
 	color: #ccc;
 }
+.panel-props {
+	font-size: 12px;
+}
+
 .eicon-upload {
 	display: inline-block;
 	width: 200px;
@@ -236,9 +243,12 @@
 .input-text {
 	width: 200px;
 	border: none;
-	border-bottom: 2px solid #00a0e9;
+	border-bottom: 1px solid #f0f3f6;
 	outline: none;
 	padding: 5px 0;
+}
+.input-text:focus {
+	border-color: #00a0e9;
 }
 .input-code {
 	width: 300px;
