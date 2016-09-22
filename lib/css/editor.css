@@ -32,6 +32,7 @@
 .eicon-undo:before { content: "\e614"; }
 .eicon-insertimage:before { content: "\e60c"; }
 .eicon-insertvideo:before { content: "\e60d"; }
+.eicon-math:before { content: "\e61d"; }
 .eicon-insertunorderedlist:before { content: "\e60e"; }
 .eicon-fontname:before { content: "\e607"; }
 .eicon-backcolor:before { content: "\e615"; }
