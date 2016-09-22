@@ -14,9 +14,10 @@
     display: inline-block;
     cursor: pointer;
     padding: 2px 0;
-    margin-right: 5px;
+    margin: 0 5px 0 0;
     border: 1px solid transparent;
     border-radius: 3px;
+    box-sizing: content-box;
 }
 .math-menu .math-item:last-child {
     margin-right: 0;
@@ -45,6 +46,7 @@
     display: inline-block;
     cursor: pointer;
     padding: 2px;
+    margin: 0;
     border: 1px solid transparent;
 }
 .math-code-list .math-code-item:hover {
