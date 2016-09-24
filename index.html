@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Simple-editor example</title>
+	<link rel="stylesheet" href="./lib/css/editor.min.css">
+	<link rel="stylesheet" href="./lib/plugins/mathtype/mathtype.css">
+	<style>	
+		body {
+			font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+			font-size: 14px;
+			color: #333;
+			margin: 0;
+		}
+		ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}	
+		a {
+			color: #333;
+			text-decoration: none;
+		}	
+		a:hover {
+			color: #00A0E9;
+		}
+		.header {
+			text-align: center;
+			background: #f1f1f1;
+			padding: 30px 0;
+		}
+		.main {
+			background: #fff;
+		}
+		.tabs {
+			text-align: center;
+			margin: 20px auto;
+		}
+		.tabs li {
+			display: inline-block;
+			margin: 0 10px;
+		}
+		.demo {
+			width: 800px;
+			margin: 0 auto;
+		}
+		.editor {
+			height: 200px;
+		}
+		.result {
+			width: 100%;
+			height: 100px;
+			border: 1px solid #cfcfcf;
+			outline: none;
+			resize: none;
+			padding: 10px;
+			box-sizing: border-box;
+		}
+		.handlers {
+			text-align: center;
+			margin: 20px auto;
+		}
+		.btn {
+			display: inline-block;
+			font-size: 12px;
+			color: #fff;
+			background: #00A0E9;
+			cursor: pointer;
+			padding: 5px 8px;
+			margin: 0 10px;
+			border-radius: 4px;
+		}
+		.footer {
+			text-align: center;
+			font-size: 14px;
+			color: #999;
+			margin-top: 20px;
+			border-top: 1px solid #f0f3f6;
+		}
+	</style>
+</head>
+<body>	
+	<div class="header">
+		<h1>Simple-editor</h1>
+		<h3>基于javascript和css开发的 Web富文本编辑器，轻量、简洁、无依赖</h3>
+	</div>
+	<div class="main">
+		<ul class="tabs">
+			<li><a href="">Demo</a></li>
+			<li><a href="./docs" target="_blank">文档</a></li> 
+			<li><a href="https://github.com/lofreer/simple-editor" target="_blank">Github</a></li>
+		</ul>
+		<div class="demo">
+			<div id="editor1" class="editor"></div>
+			<div class="handlers">
+				<span class="btn setContent">设置内容</span>
+				<span class="btn getContent">获取内容</span>
+				<span class="btn getContentTxt">获取文本内容</span>
+			</div>
+			<textarea id="result" class="result" cols="30"></textarea>
+		</div>
+	</div>
+	<div class="footer">
+		<p>©2016 lofreer.github.io</p>
+	</div>
+	<script src="./lib/js/editor.min.js"></script>	
+	<script src="./lib/plugins/mathtype/index.js"></script>
+	<script>
+		var editor = Edit.getEditor('editor1');
+		var result = document.getElementById('result');
+		document.querySelector('.setContent').addEventListener('click', function(){
+			editor.setContent(result.value, true);
+		});
+		document.querySelector('.getContent').addEventListener('click', function(){
+			result.value = editor.getContent();
+		});
+		document.querySelector('.getContentTxt').addEventListener('click', function(){
+			result.value = editor.getContentTxt();
+		});
+	</script>
+</body>
+</html>
