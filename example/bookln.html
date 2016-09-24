@@ -7,12 +7,16 @@
     <link rel="stylesheet" href="../lib/plugins/mathtype/mathtype.css">
     <style>        
         .container {
-            width: 900px;
+            width: 800px;
             margin: 50px auto;
+        }
+        .container>h2 {
+            margin-top: 50px;
         }
         .content-box {
             display: flex;
-            height: 300px;
+            min-height: 450px;
+            padding: 20px;
             border: 1px dashed #cfcfcf;
         }
         .tab-box {
@@ -82,6 +86,7 @@
             display: none;
             list-style: none;
             padding: 0;
+            margin: 0;
         }
         .tab-content>li {
             position: relative;
@@ -100,7 +105,28 @@
             border-bottom: none;
         }
         .tw-editor {
-            width: 420px;
+            width: 350px;
+        }
+
+        .topic-box {
+            
+        }
+        .choice-item {
+            display: flex;
+            margin-top: 30px;
+        }
+        .choice-item>label {
+            width: 80px;
+        }
+        .choice-editor {
+            flex: 1;
+            height: 110px;
+        }
+        .choice-editor .editor-iframe {
+            border-top: none;
+        }
+        #topic {
+            display: block;
         }
     </style>
 </head>
@@ -111,7 +137,7 @@
 
         </div>
         <h2>题库模块</h2>
-        <div class="content-box">
+        <div id="topic" class="content-box">
 
         </div>
     </div>
@@ -234,7 +260,52 @@
             item.addEventListener('click', function(){
                 twEditor.execCommand('inserthtml',this.innerHTML.trim());
             })
-        });        
+        });   
+
+        var labelKeys = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        var topicId = 0;
+        var choiceList = [
+            {
+                value: '',
+                active: false,
+                index: 0
+            },
+            {
+                value: '',
+                active: false,
+                index: 1
+            },
+            {
+                value: '',
+                active: false,
+                index: 2
+            }
+        ]
+        var topicTitle = ce('div',{class:'topic-box'},[
+            ce('div',{class:'choice-item'},[
+                ce('label',['题目描述']),
+                ce('div',{id:'editor-title',class:'choice-editor',style:'height:150px;'})
+            ])
+        ]);
+        var topicDom = ce('div',{class:'topic-box'},choiceList.map(function(item,i){
+            return ce('div',{class:'choice-item'},[
+                ce('label',['选项'+labelKeys[item.index]]),
+                ce('div',{id:'editor'+item.index,class:'choice-editor'})
+            ])
+        }));
+        
+        document.querySelector('#topic').appendChild(topicTitle).parentNode.appendChild(topicDom);
+
+        Edit.getEditor('editor-title',{
+            toolbars: ['insertimage']
+        });
+        choiceList.forEach(function(item){
+            Edit.getEditor('editor'+item.index,{
+                toolbars: ['insertimage']
+            })
+        });
+
+
     </script>
 </body>
 </html>
