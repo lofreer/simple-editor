@@ -130,6 +130,12 @@
 	background: #dfdfdf;
 	margin: 0 4px;
 }
+.editor-separator:hover {
+	background: #dfdfdf;
+}
+.editor-separator:hover::after {
+	opacity: 0;
+}
 .editor-space {
 	display: inline-block;
 }
