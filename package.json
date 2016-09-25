@@ -1,6 +1,6 @@
 {
   "name": "simple-editor",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "web editor",
   "main": "index.js",
   "directories": {
