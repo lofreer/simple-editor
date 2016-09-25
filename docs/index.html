@@ -5,63 +5,73 @@
     <title>Simple-editor docs</title>
     <link rel="stylesheet" href="./base.css">
     <link rel="stylesheet" href="./prism.css">
+    <link rel="stylesheet" href="../lib/css/editor.min.css">
     <style>
         body {
             padding: 50px 0;
         }
         .container {
             display: flex;
-            max-width: 900px;
+            max-width: 960px;
             width: 90%;
             height: 100%;
             margin: 0 auto;
         }
         .menus {
-            width: 100px;
             background: rgba(200,200,200,.5);
         }
         .navs {
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            width: 100px;
+            width: 80px;
             height: 100%;
         }
         .nav-item {
             width: 50px;
-            height: 50px;
-            line-height: 50px;
             text-align: center;
-            background: rgba(50,50,50,.7);
-            border-radius: 4px;
-            margin: 20px auto;
-            transform: rotate(45deg);
+            border-bottom: 2px solid transparent;
+            margin-top: 15px;
+            transition: all .3s;
         }
+        .nav-item.active,
         .nav-item:hover {
-            background: rgba(50,50,50,.9);
+            font-weight: bold;
+            border-color: #00a0e9;
         }
         .nav-item>label {
             display: inline-block;
             width: 100%;
             height: 100%;
-            color: #fff;
             cursor: pointer;
-            transform: rotate(315deg);
         }
 
 
         .contents {
             flex: 1;
             background: rgba(240,240,240,.5);
-            padding: 20px;
+            padding: 20px 30px;
         }
         .contents>input {
             display: none;
         }
         .content {
+            display: none;
             height: 100%;
             overflow: auto;
+        }
+        .content>h3 {
+            margin: 20px 0 10px;
+        }
+        .content>h3:first-child {
+            margin-top: 0;
+        }
+        .content>p {
+            font-size: 14px;
+        }
+
+        .label:checked + .content {
+            display: block;
         }
 
 
@@ -74,13 +84,14 @@
                 <li class="nav-item"><label for="start">开始</label></li>
                 <li class="nav-item"><label for="config">配置</label></li>
                 <li class="nav-item"><label for="plugin">插件</label></li>
+                <li class="nav-item"><label for="api">API</label></li>
             </ul>
         </div>
         <div class="contents">
-            <input id="start" class="label" name="label" type="radio">
+            <input id="start" class="label" name="label" type="radio" checked>
             <div class="content">
                 <h3>下载编辑器</h3>
-                <p>到官网下载 Simple-editor 最新版</p>
+                <p>到Github下载 Simple-editor 最新版 <a style="color:#00a0e9;" href="https://github.com/lofreer/simple-editor" target="_blank">https://github.com/lofreer/simple-editor</a></p>
                 <h3>创建demo文件</h3>
                 <p>解压下载的包，在解压后的目录创建 demo.html 文件，填入下面的html代码</p>
                 <pre>
@@ -91,6 +102,8 @@
 &lt;head>
     &lt;meta charset="UTF-8">
     &lt;title>Simple-editor demo&lt;/title>
+    &lt;!-- css样式文件，webpack加载可忽略 -->
+    &lt;link rel="stylesheet" href="./lib/css/editor.min.css">
 &lt;/head>
 
 &lt;body>
@@ -112,11 +125,106 @@
 &lt;/html>
 </code>
                 </pre>
+                <h3>Demo展示</h3>
+                <div id="editor">初始化内容</div>
             </div>
             <input id="config" class="label" name="label" type="radio">
+            <div class="content">
+                <h3>配置项</h3>
+                <p>在实例化时传入配置参数</p>
+                <pre>
+<code class="language-html">
+&lt;script type="text/javascript">
+    var editor = Edit.getEditor('container', {
+        initialContent: '初始化内容',                     // 优先级大于容器标签内的填充
+        resize: true,                                   // 编辑框是否可拖放
+        serverUrl: 'http://api.lofreer.com/upload'      // 服务器端资源文件的上传地址
+        toolbars: ['code', '|', 'bold', 'italic'],      // 配置工具栏
+        lang: Edit.langs['zh-ch']                       // 语言设置
+    });
+&lt;/script>
+</code>
+                </pre>
+            </div>
             <input id="plugin" class="label" name="label" type="radio">
+            <div class="content">
+                <h3>插件开发</h3>
+                <p>考虑到大家的功能基本上都会扩展一个UI和这个UI做的事情，所以Simple-ditor提供了registerUI这个接口，可以让开发者动态的注入扩展的内容。</p>
+                <pre>
+<code class="language-html">
+&lt;script type="text/javascript">
+    Edit.registerUI('uiname', function(editor, uiname){
+        // do something
+    });
+&lt;/script>
+</code>
+                </pre>
+                <p>1. uiname,是你为新添加的UI起的名字</p>
+                <p>2. function，是实际你要做的事情，这里提供两个参数，editor是编辑器实例，如果你有多个编辑器实例，那每个编辑器实例化后，都会调用这个function,并且把editor传进来,uiname,你为ui起的名字，如果前边你添加的是多个的化，这里function会被调用多次，并且将每一个ui名字传递进来.如果函数返回了一个UI 实例，那这个UI实例就会被默认加到工具栏上。当然也可以不返回任何UI。比如希望监控selectionchange事件，在某些场景下弹出浮层，这时就不需要返回任何UI。</p>
+                <h3>添加按钮</h3>
+                <p>添加一个按钮</p>
+                <pre>
+<code class="language-html">
+&lt;script type="text/javascript">
+    Edit.registerUI('button', function(editor, uiName) {
+        //注册按钮名称对应的command命令
+        editor.registerCommand(uiName, {
+            execCommand: function() {
+                alert('execCommand:' + uiName)
+            }
+        });
+        //创建一个button
+        var btn = new UE.ui.Button({
+            //按钮的名字
+            name: uiName,
+            //提示
+            title: uiName,
+            //添加额外样式
+            stlyle: 'background-image:ulr(xxx.png);background-position: -500px 0;',
+            //事件对象
+            handles: {
+                click: function() {
+                    // 这里可以不用执行命令,做自己的操作也可
+                    editor.execCommand(uiName);
+                }
+            }
+        });
+        //当点到编辑内容上时，按钮要做的状态反射
+        editor.addListener('selectionchange', function() {
+            var state = editor.queryCommandState(uiName);
+            if (state == -1) {
+                btn.setDisabled(true);
+                btn.setChecked(false);
+            } else {
+                btn.setDisabled(false);
+                btn.setChecked(state);
+            }
+        });
+        //因为添加的是button,所以需要返回这个button
+        return btn;
+    });
+&lt;/script>
+</code>
+                </pre>
+            </div>
+            <input id="api" class="label" name="label" type="radio">
         </div>
     </div>
     <script src="./prism.js"></script>
+    <script src="../lib/js/editor.min.js"></script>
+    <script>
+        Edit.getEditor('editor');
+
+        var navs = document.querySelectorAll('.nav-item');
+        var current = navs[0];
+        Array.prototype.slice.call(navs).forEach(function(item){
+            item.addEventListener('click',function(){
+                current.classList.remove('active');
+                this.classList.add('active');
+                current = this;
+            })
+        });
+        current.classList.add('active');
+    </script>
 </body>
 </html>
