@@ -3,81 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <title>Simple-editor docs</title>
+    <link rel="stylesheet" href="./base.css">
+    <link rel="stylesheet" href="./prism.css">
+    <link rel="stylesheet" href="../lib/css/editor.min.css">
     <style>
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: 
+        body {
+            padding: 50px 0;
         }
+        .container {
+            display: flex;
+            max-width: 960px;
+            width: 90%;
+            height: 100%;
+            margin: 0 auto;
+        }
+        .menus {
+            background: rgba(200,200,200,.5);
+        }
+        .navs {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px;
+            height: 100%;
+        }
+        .nav-item {
+            width: 50px;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            margin-top: 15px;
+            transition: all .3s;
+        }
+        .nav-item.active,
+        .nav-item:hover {
+            font-weight: bold;
+            border-color: #00a0e9;
+        }
+        .nav-item>label {
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+
+        .contents {
+            flex: 1;
+            background: rgba(240,240,240,.5);
+            padding: 20px 30px;
+        }
+        .contents>input {
+            display: none;
+        }
+        .content {
+            display: none;
+            height: 100%;
+            overflow: auto;
+        }
+        .content>h3 {
+            margin: 20px 0 10px;
+        }
+        .content>h3:first-child {
+            margin-top: 0;
+        }
+        .content>p {
+            font-size: 14px;
+        }
+
+        .label:checked + .content {
+            display: block;
+        }
+
+
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Init</h2>
-        <div class="content">
-            <pre>
-                <!--编辑器容器-->
-                &lt;!--html--&gt;
-
-                &lt;div id="editor"&gt;编辑器容器&lt;/div&gt;
-
-                &lt;!--html--&gt;
-
-
-
-
-                &lt;!--stript--&gt;
-
-                var editor = Edit.getEditor('editor1', {
-                    resize: true,                                            // 编辑区域是否可缩放
-                    toolabrs: ['code', '|', 'bold', 'italic', 'underline'],  // 菜单栏配置
-                    serverUrl: 'http://api.xxx.com/upload.do',               // 文件上传API
-                    fontnames: ['宋体', '黑体', 'Impact'],                    // 文字名称
-                    colors: {title:value, '黑色':'#000'},                    // 色值
-                    fontsizes: {title:value, '12px':1},                     // 字体大小
-                    headings: {title:value, '标题1':'h1'},                   // 标题
-                    lang: {quotes:'引用', fontname:'字体'}                    // 语言: Edit.langs: {'zh-ch':{}, 'xxx': {}}
-                });
-
-                editor.addListener('click', function(ev){                     // 监听点击事件
-                    console.log(ev)                                           // Events obj
-                    console.log(this)                                         // editor obj
-                    alert('click')
-                });
-
-                editor.setContent('&lt;p&gt;5555&lt;/p&gt;', true)                       // 设置编辑器内容 arguments[1] ? 追加 : 重置
-
-                var contentHtml = editor.getContent();                       // 获取html内容
-                var contentTxt = editor.getContentTxt();                     // 获取纯文本内容
-
-                &lt;!--stript--&gt;
-
-            </pre>
+        <div class="menus">
+            <ul class="navs">
+                <li class="nav-item"><label for="start">开始</label></li>
+                <li class="nav-item"><label for="config">配置</label></li>
+                <li class="nav-item"><label for="plugin">插件</label></li>
+                <li class="nav-item"><label for="api">API</label></li>
+            </ul>
         </div>
-        <h2>Commands</h2>
-            <pre>
+        <div class="contents">
+            <input id="start" class="label" name="label" type="radio" checked>
+            <div class="content">
+                <h3>下载编辑器</h3>
+                <p>到Github下载 Simple-editor 最新版 <a style="color:#00a0e9;" href="https://github.com/lofreer/simple-editor" target="_blank">https://github.com/lofreer/simple-editor</a></p>
+                <h3>创建demo文件</h3>
+                <p>解压下载的包，在解压后的目录创建 demo.html 文件，填入下面的html代码</p>
+                <pre>
+<code class="language-html">
+&lt;!DOCTYPE HTML>
+&lt;html>
 
-                code                展示源码:     editor.execCommand('code')
-                bold                字体加粗:     editor.execCommand('bold')
-                italic              斜体字:      editor.execCommand('italic')
-                underline           下划线:      editor.execCommand('underline')
-                strikethrough       删除线:      editor.execCommand('strikethrough')
-                forecolor           文字颜色:     editor.execCommand('forecolor', value)
-                backcolor           背景颜色:     editor.execCommand('backcolor', value)
-                insertimg           插入图片:     editor.execCommand('insertimg', imgStr)
-                imsertvideo         插入视频:     editor.execCommand('insertvideo', videoStr)
-                inserthtml          插入代码      editor.execCommand('inserthtml', htmlStr)
-                ......
+&lt;head>
+    &lt;meta charset="UTF-8">
+    &lt;title>Simple-editor demo&lt;/title>
+    &lt;!-- css样式文件，webpack加载可忽略 -->
+    &lt;link rel="stylesheet" href="./lib/css/editor.min.css">
+&lt;/head>
 
-            </pre>
-        <h2>Events</h2>
-        <pre>
+&lt;body>
+    &lt;!-- 加载编辑器的容器 -->
+    &lt;div id="container">
+        这里写你的初始化内容
+    &lt;/div>
+    
+    &lt;!-- 编辑器源码文件 -->
+    &lt;script type="text/javascript" src="lib/js/editor.min.js">&lt;/script>
+    &lt;!-- 实例化编辑器 -->
+    &lt;script type="text/javascript">
+        var editor = Edit.getEditor('container', {
+            ... // 配置参数
+        });
+    &lt;/script>
+&lt;/body>
 
-                editor.addListener('contentChange', callback);          // 内容变化时触发
-                editor.addListener('selectionchange', callback);        // 选区变化时触发
-                ......
-                
-            </pre>
+&lt;/html>
+</code>
+                </pre>
+                <h3>Demo展示</h3>
+                <div id="editor">初始化内容</div>
+            </div>
+            <input id="config" class="label" name="label" type="radio">
+            <div class="content">
+                <h3>配置项</h3>
+                <p>在实例化时传入配置参数</p>
+                <pre>
+<code class="language-html">
+&lt;script type="text/javascript">
+    var editor = Edit.getEditor('container', {
+        initialContent: '初始化内容',                     // 优先级大于容器标签内的填充
+        resize: true,                                   // 编辑框是否可拖放
+        serverUrl: 'http://api.lofreer.com/upload'      // 服务器端资源文件的上传地址
+        toolbars: ['code', '|', 'bold', 'italic'],      // 配置工具栏
+        lang: Edit.langs['zh-ch']                       // 语言设置
+    });
+&lt;/script>
+</code>
+                </pre>
+            </div>
+            <input id="plugin" class="label" name="label" type="radio">
+            <div class="content">
+                <h3>插件开发</h3>
+                <p>考虑到大家的功能基本上都会扩展一个UI和这个UI做的事情，所以Simple-ditor提供了registerUI这个接口，可以让开发者动态的注入扩展的内容。</p>
+                <pre>
+<code class="language-html">
+&lt;script type="text/javascript">
+    Edit.registerUI('uiname', function(editor, uiname){
+        // do something
+    });
+&lt;/script>
+</code>
+                </pre>
+                <p>1. uiname,是你为新添加的UI起的名字</p>
+                <p>2. function，是实际你要做的事情，这里提供两个参数，editor是编辑器实例，如果你有多个编辑器实例，那每个编辑器实例化后，都会调用这个function,并且把editor传进来,uiname,你为ui起的名字，如果前边你添加的是多个的化，这里function会被调用多次，并且将每一个ui名字传递进来.如果函数返回了一个UI 实例，那这个UI实例就会被默认加到工具栏上。当然也可以不返回任何UI。比如希望监控selectionchange事件，在某些场景下弹出浮层，这时就不需要返回任何UI。</p>
+                <h3>添加按钮</h3>
+                <p>添加一个按钮</p>
+                <pre>
+<code class="language-html">
+&lt;script type="text/javascript">
+    Edit.registerUI('button', function(editor, uiName) {
+        //注册按钮名称对应的command命令
+        editor.registerCommand(uiName, {
+            execCommand: function() {
+                alert('execCommand:' + uiName)
+            }
+        });
+        //创建一个button
+        var btn = new UE.ui.Button({
+            //按钮的名字
+            name: uiName,
+            //提示
+            title: uiName,
+            //添加额外样式
+            stlyle: 'background-image:ulr(xxx.png);background-position: -500px 0;',
+            //事件对象
+            handles: {
+                click: function() {
+                    // 这里可以不用执行命令,做自己的操作也可
+                    editor.execCommand(uiName);
+                }
+            }
+        });
+        //当点到编辑内容上时，按钮要做的状态反射
+        editor.addListener('selectionchange', function() {
+            var state = editor.queryCommandState(uiName);
+            if (state == -1) {
+                btn.setDisabled(true);
+                btn.setChecked(false);
+            } else {
+                btn.setDisabled(false);
+                btn.setChecked(state);
+            }
+        });
+        //因为添加的是button,所以需要返回这个button
+        return btn;
+    });
+&lt;/script>
+</code>
+                </pre>
+            </div>
+            <input id="api" class="label" name="label" type="radio">
+        </div>
     </div>
+    <script src="./prism.js"></script>
+    <script src="../lib/js/editor.min.js"></script>
+    <script>
+        Edit.getEditor('editor');
+
+        var navs = document.querySelectorAll('.nav-item');
+        var current = navs[0];
+        Array.prototype.slice.call(navs).forEach(function(item){
+            item.addEventListener('click',function(){
+                current.classList.remove('active');
+                this.classList.add('active');
+                current = this;
+            })
+        });
+        current.classList.add('active');
+    </script>
 </body>
 </html>
