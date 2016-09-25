@@ -3,81 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <title>Simple-editor docs</title>
+    <link rel="stylesheet" href="./base.css">
+    <link rel="stylesheet" href="./prism.css">
     <style>
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: 
+        body {
+            padding: 50px 0;
         }
+        .container {
+            display: flex;
+            max-width: 900px;
+            width: 90%;
+            height: 100%;
+            margin: 0 auto;
+        }
+        .menus {
+            width: 100px;
+            background: rgba(200,200,200,.5);
+        }
+        .navs {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100px;
+            height: 100%;
+        }
+        .nav-item {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            background: rgba(50,50,50,.7);
+            border-radius: 4px;
+            margin: 20px auto;
+            transform: rotate(45deg);
+        }
+        .nav-item:hover {
+            background: rgba(50,50,50,.9);
+        }
+        .nav-item>label {
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            color: #fff;
+            cursor: pointer;
+            transform: rotate(315deg);
+        }
+
+
+        .contents {
+            flex: 1;
+            background: rgba(240,240,240,.5);
+            padding: 20px;
+        }
+        .contents>input {
+            display: none;
+        }
+        .content {
+            height: 100%;
+            overflow: auto;
+        }
+
+
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Init</h2>
-        <div class="content">
-            <pre>
-                <!--编辑器容器-->
-                &lt;!--html--&gt;
-
-                &lt;div id="editor"&gt;编辑器容器&lt;/div&gt;
-
-                &lt;!--html--&gt;
-
-
-
-
-                &lt;!--stript--&gt;
-
-                var editor = Edit.getEditor('editor1', {
-                    resize: true,                                            // 编辑区域是否可缩放
-                    toolabrs: ['code', '|', 'bold', 'italic', 'underline'],  // 菜单栏配置
-                    serverUrl: 'http://api.xxx.com/upload.do',               // 文件上传API
-                    fontnames: ['宋体', '黑体', 'Impact'],                    // 文字名称
-                    colors: {title:value, '黑色':'#000'},                    // 色值
-                    fontsizes: {title:value, '12px':1},                     // 字体大小
-                    headings: {title:value, '标题1':'h1'},                   // 标题
-                    lang: {quotes:'引用', fontname:'字体'}                    // 语言: Edit.langs: {'zh-ch':{}, 'xxx': {}}
-                });
-
-                editor.addListener('click', function(ev){                     // 监听点击事件
-                    console.log(ev)                                           // Events obj
-                    console.log(this)                                         // editor obj
-                    alert('click')
-                });
-
-                editor.setContent('&lt;p&gt;5555&lt;/p&gt;', true)                       // 设置编辑器内容 arguments[1] ? 追加 : 重置
-
-                var contentHtml = editor.getContent();                       // 获取html内容
-                var contentTxt = editor.getContentTxt();                     // 获取纯文本内容
-
-                &lt;!--stript--&gt;
-
-            </pre>
+        <div class="menus">
+            <ul class="navs">
+                <li class="nav-item"><label for="start">开始</label></li>
+                <li class="nav-item"><label for="config">配置</label></li>
+                <li class="nav-item"><label for="plugin">插件</label></li>
+            </ul>
         </div>
-        <h2>Commands</h2>
-            <pre>
+        <div class="contents">
+            <input id="start" class="label" name="label" type="radio">
+            <div class="content">
+                <h3>下载编辑器</h3>
+                <p>到官网下载 Simple-editor 最新版</p>
+                <h3>创建demo文件</h3>
+                <p>解压下载的包，在解压后的目录创建 demo.html 文件，填入下面的html代码</p>
+                <pre>
+<code class="language-html">
+&lt;!DOCTYPE HTML>
+&lt;html>
 
-                code                展示源码:     editor.execCommand('code')
-                bold                字体加粗:     editor.execCommand('bold')
-                italic              斜体字:      editor.execCommand('italic')
-                underline           下划线:      editor.execCommand('underline')
-                strikethrough       删除线:      editor.execCommand('strikethrough')
-                forecolor           文字颜色:     editor.execCommand('forecolor', value)
-                backcolor           背景颜色:     editor.execCommand('backcolor', value)
-                insertimg           插入图片:     editor.execCommand('insertimg', imgStr)
-                imsertvideo         插入视频:     editor.execCommand('insertvideo', videoStr)
-                inserthtml          插入代码      editor.execCommand('inserthtml', htmlStr)
-                ......
+&lt;head>
+    &lt;meta charset="UTF-8">
+    &lt;title>Simple-editor demo&lt;/title>
+&lt;/head>
 
-            </pre>
-        <h2>Events</h2>
-        <pre>
+&lt;body>
+    &lt;!-- 加载编辑器的容器 -->
+    &lt;div id="container">
+        这里写你的初始化内容
+    &lt;/div>
+    
+    &lt;!-- 编辑器源码文件 -->
+    &lt;script type="text/javascript" src="lib/js/editor.min.js">&lt;/script>
+    &lt;!-- 实例化编辑器 -->
+    &lt;script type="text/javascript">
+        var editor = Edit.getEditor('container', {
+            ... // 配置参数
+        });
+    &lt;/script>
+&lt;/body>
 
-                editor.addListener('contentChange', callback);          // 内容变化时触发
-                editor.addListener('selectionchange', callback);        // 选区变化时触发
-                ......
-                
-            </pre>
+&lt;/html>
+</code>
+                </pre>
+            </div>
+            <input id="config" class="label" name="label" type="radio">
+            <input id="plugin" class="label" name="label" type="radio">
+        </div>
     </div>
+    <script src="./prism.js"></script>
 </body>
 </html>
