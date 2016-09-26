@@ -8,7 +8,7 @@
 
 .eicon {
   font-family:"eiconfont" !important;
-  font-size:16px;
+  font-size:14px;
   color: #666;
   font-style:normal;
   -webkit-font-smoothing: antialiased;
@@ -62,16 +62,17 @@
 .editor-item {
 	position: relative;
 	display: inline-block;
-	width: 30px;
-	height: 30px;
-	line-height: 30px;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
 	text-align: center;
 	cursor: pointer;
 	background: #fff;
 	outline:none;
+	opacity: .5;
 	margin: 0;
 }
-.editor-item::after {
+.editor-item:not(.editor-separator)::after {
     font-size: 12px;
     line-height: 1.6rem;
     position: absolute;
@@ -93,27 +94,28 @@
     border-radius: 3px;
     background: rgba(51, 51, 51, .9);
 }
-.editor-item:hover {
-	background: #f0f3f6;
+.editor-item:not(.editor-separator):hover {
+	opacity: 1;
+	background: #f6f6f6;
 }
-.editor-item:hover::after {
+.editor-item:not(.editor-separator):hover::after {
 	opacity: 1;
 }
-.edui-state-checked .eicon {
-	color: #00a0e9;
+.edui-state-checked {
+	opacity: 1;
 }
-
 .edui-state-disabled {
 	cursor: default;
 }
 .edui-state-disabled:hover {
-	background: #fff;
-}
-.edui-state-disabled:hover::after {
-	opacity: 0;
+	background: #fff !important;
+	opacity: .5 !important;
 }
 .edui-state-disabled .eicon {
 	color: #ccc;
+}
+.edui-state-disabled:hover::after {
+	opacity: 0 !important;
 }
 
 .editor-iframe {
@@ -126,9 +128,10 @@
 .editor-separator {
 	cursor: default;
 	width: 1px;
-	vertical-align: top;
+	height: 16px;
+	vertical-align: middle;
 	background: #dfdfdf;
-	margin: 0 4px;
+	margin: 0 2px;
 }
 .editor-separator:hover {
 	background: #dfdfdf;
