@@ -74,7 +74,7 @@
 }
 .editor-item:not(.editor-separator)::after {
     font-size: 12px;
-    line-height: 1.6rem;
+    line-height: 1;
     position: absolute;
     z-index: 99;
     top: 100%;
@@ -82,7 +82,7 @@
     display: block;
     overflow: hidden;
     max-width: 32rem;
-    padding: 2px 4px;
+    padding: 4px;
     content: attr(data-title);
     transition: all .216s ease;
     transform: translate(-50%, 0);
