@@ -47,7 +47,7 @@
     border: 1px solid transparent;
 }
 .math-code-list .math-code-item:hover {
-    background-color: #f0f3f6;
+    background-color: #f6f6f6;
     border-color: #42a5f5;
 }
 .math-code-list .math-code-item .math-code {

@@ -46,6 +46,7 @@
 .eicon-strikethrough:before { content: "\e600"; }
 
 .editor-container {
+	font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -128,7 +129,7 @@
 .editor-separator {
 	cursor: default;
 	width: 1px;
-	height: 16px;
+	height: 14px;
 	vertical-align: middle;
 	background: #dfdfdf;
 	margin: 0 2px;
@@ -168,7 +169,7 @@
 	padding: 0 10px;
 }
 .menu-list li:hover {
-	background: #f0f3f6;
+	background: #f6f6f6;
 }
 .menu-colors {
 	width: 104px;
@@ -223,7 +224,7 @@
 	margin: 10px 0 5px 10px;
 }
 .panel-handles span:hover {
-	background: #f0f3f6;
+	background: #f6f6f6;
 }
 .panel-confirm {
 	color: #00a0e9;
@@ -253,7 +254,7 @@
 .input-text {
 	width: 200px;
 	border: none;
-	border-bottom: 1px solid #f0f3f6;
+	border-bottom: 1px solid #f6f6f6;
 	outline: none;
 	padding: 5px 0;
 }
@@ -265,7 +266,7 @@
 	height: 100px;
 	outline: none;
 	border: none;
-	border: 1px solid #f0f3f6;
+	border: 1px solid #f6f6f6;
 	padding: 5px;
 }
 .input-code:focus {
