@@ -1,3 +1,7 @@
+body {
+	/*padding-right: calc(100vw - 100%);*/
+}
+
 @font-face {font-family: "eiconfont";
   src: url('../fonts/iconfont.eot'); /* IE9*/
   src: url('../fonts/iconfont.eot') format('embedded-opentype'), /* IE6-IE8 */
