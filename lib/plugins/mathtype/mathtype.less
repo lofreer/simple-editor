@@ -1,0 +1,79 @@
+.math-menu {
+    position: relative;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 320px;
+    line-height: 1;
+    background-image: -webkit-linear-gradient(top,#F5F5F5,#EFEFEF);
+    padding: 2px 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+.math-menu .math-item {
+    display: inline-block;
+    cursor: pointer;
+    padding: 2px 0;
+    margin: 0 5px 0 0;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    box-sizing: content-box;
+}
+.math-menu .math-item:last-child {
+    margin-right: 0;
+}
+.math-menu .math-item:hover {
+    border-color: #cfcfcf;
+}
+.math-code {
+    background: url('./codes.png') no-repeat; 
+}
+.math-code-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 320px;
+    background: #fff;
+    cursor: default;
+    padding: 5px;
+    border: 1px solid #cfcfcf;
+    box-sizing: border-box;
+}
+.math-code-list .math-code-item {
+    display: inline-block;
+    cursor: pointer;
+    padding: 2px;
+    margin: 0;
+    border: 1px solid transparent;
+}
+.math-code-list .math-code-item:hover {
+    background-color: #f6f6f6;
+    border-color: #42a5f5;
+}
+.math-code-list .math-code-item .math-code {
+    display: block;
+}
+
+.math-text {
+    width: 100%;
+    height: 60px;
+    outline: none;
+    resize: vertical;
+    padding: 5px;
+    border: 1px solid #cfcfcf;
+    border-top: none;
+    box-sizing: border-box;
+}
+
+.math-preview {
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    padding: 5px;
+    border: 1px dashed #cfcfcf;
+    box-sizing: border-box;
+}
+.math-preview>img {
+    max-width: 100%;
+    max-height: 100%;
+}
