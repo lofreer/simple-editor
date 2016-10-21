@@ -51,6 +51,7 @@
             flex: 1;
             background: rgba(240,240,240,.5);
             padding: 20px 30px;
+            overflow: auto;
         }
         .contents>input {
             display: none;
@@ -208,6 +209,89 @@
                 </pre>
             </div>
             <input id="api" class="label" name="label" type="radio">
+            <div class="content">
+                <h2>基本使用</h2>
+                <pre>
+<code class="language-js">
+    var editor = Edit.getEditor('editor1', {
+        resize: true,                                            // 编辑区域是否可缩放
+        toolabrs: ['code', '|', 'bold', 'italic', 'underline'],  // 菜单栏配置
+        serverUrl: 'http://api.xxx.com/upload.do',               // 文件上传API
+        fontnames: ['宋体', '黑体', 'Impact'],                    // 文字名称
+        colors: {title:value, '黑色':'#000'},                    // 色值
+        fontsizes: {title:value, '12px':1},                     // 字体大小
+        headings: {title:value, '标题1':'h1'},                   // 标题
+        lang: {quotes:'引用', fontname:'字体'}                    // 语言: Edit.langs: {'zh-ch':{}, 'xxx': {}}
+    });
+
+    editor.addListener('click', function(ev){                     // 监听点击事件
+        console.log(ev)                                           // Events obj
+        console.log(this)                                         // editor obj
+        alert('click')
+    });
+
+    editor.setContent('&lt;p&gt;5555&lt;/p&gt;', true)                       // 设置编辑器内容 arguments[1] ? 追加 : 重置
+
+    var contentHtml = editor.getContent();                       // 获取html内容
+    var contentTxt = editor.getContentTxt();                     // 获取纯文本内容
+</code>
+                </pre>
+                <br>
+                <h2>方法列表</h2>
+                <pre>
+                    <code class="language-js">
+ready(Function fn)                              编辑器对外提供的监听ready事件的接口， 通过调用该方法，达到的效果与监听ready事件是一致的
+destroy()                                       销毁编辑器实例
+getContent()                                    获取编辑器的内容
+getContentTxt()                                 获取编辑器中的纯文本内容,没有段落格式
+setContent(String html, Boolean isAppendTo)     设置编辑器的内容，可修改编辑器当前的html内容
+focus()                                         让编辑器获得焦点
+                    </code>
+                </pre>
+                <br>
+                <h2>事件列表</h2>
+                <pre>
+                    <code class="language-js">
+addListener(String types, Function fn) / on()               注册事件监听器
+removeListener(String types, Function fn) / off()           移除事件监听器
+emit(String types)                                          触发事件
+
+ready                                           编辑器准备就绪后会触发该事件
+selectionchange                                 每当编辑器内部选区发生改变时，将触发该事件
+contentchange                                   编辑器内容发生改变时会触发该事件
+                    </code>
+                </pre>
+                <br>
+                <h2>Toolabar列表</h2>
+            <pre>
+<code class="language-js">
+code: '源码',
+bold: '粗体',
+italic: '斜体',
+underline: '下划线',
+strikethrough: '删除线',
+forecolor: '文字颜色',
+backcolor: '背景色',
+removeformat: '清除格式',
+quotes: '引用',
+fontname: '字体',
+fontsize: '字号',
+heading: '标题',
+indent: '缩进',
+outdent: '取消缩进',
+insertorderedlist: '有序列表',
+insertunorderedlist: '无序列表',
+justifyleft: '左对齐',
+justifycenter: '居中对齐',
+justifyright: '右对齐',
+justifyfull: '两端对齐',
+createlink: '创建链接',
+insertimage: '插入图片',
+insertvideo: '插入视频',
+insertcode: '插入代码'
+</code>
+            </pre>            
+            </div>
         </div>
     </div>
     <script src="./prism.js"></script>
