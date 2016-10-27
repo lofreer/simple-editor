@@ -93,7 +93,7 @@
 			var edit = Edit.getEditor(el.getAttribute('id'),{
 				toolbars: options,
 				events: {
-					click: function(ev){
+					contentchange: function(ev){
 						console.log(this)
 					}
 				}
