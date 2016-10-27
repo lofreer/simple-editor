@@ -61,7 +61,7 @@
 	<div class="handlers">
 		<span class="btn getContent">获取内容</span>
 	</div>
-	<script src="../lib/js/editor.js"></script>
+	<script src="../lib/js/editor.min.js"></script>
 	<script src="../lib/plugins/mathtype/index.js"></script>
 	<script>		
 		// Edit.registerUI('summary',function(editor,uiName){
@@ -91,7 +91,12 @@
 		
 		Array.prototype.slice.call(document.querySelectorAll('.editor')).forEach(function(el){
 			var edit = Edit.getEditor(el.getAttribute('id'),{
-				toolbars: options
+				toolbars: options,
+				events: {
+					click: function(ev){
+						console.log(this)
+					}
+				}
 			});	
 			options.pop();
 			console.log(edit)
