@@ -35,33 +35,12 @@
 	</style>
 </head>
 <body>	
-	<div id="editor1" class="editor"><p>初始化内容</p></div>
-	<!--<div id="editor2" class="editor"></div>
-	<div id="editor3" class="editor"></div>
-	<div id="editor4" class="editor"></div>
-	<div id="editor5" class="editor"></div> 
-	<div id="editor6" class="editor"></div>
-	<div id="editor7" class="editor"></div>
-	<div id="editor8" class="editor"></div>
-	<div id="editor9" class="editor"></div> 
-	<div id="editor10" class="editor"></div>
-	<div id="editor11" class="editor"></div>
-	<div id="editor12" class="editor"></div>
-	<div id="editor13" class="editor"></div> 
-	<div id="editor14" class="editor"></div> 
-	<div id="editor15" class="editor"></div>
-	<div id="editor16" class="editor"></div>
-	<div id="editor17" class="editor"></div>
-	<div id="editor18" class="editor"></div> 
-	<div id="editor19" class="editor"></div> 
-	<div id="editor20" class="editor"></div>
-	<div id="editor21" class="editor"></div>
-	<div id="editor22" class="editor"></div>
-	<div id="editor23" class="editor"></div> -->
+	<div id="editor1" class="editor"><p>初始化内容1</p></div>
+	<div id="editor2" class="editor"><p>初始化内容2222</p></div>
 	<div class="handlers">
 		<span class="btn getContent">获取内容</span>
 	</div>
-	<script src="../lib/js/editor.min.js"></script>
+	<script src="../lib/js/editor.js"></script>
 	<script src="../lib/plugins/mathtype/index.js"></script>
 	<script>		
 		// Edit.registerUI('summary',function(editor,uiName){
@@ -88,21 +67,23 @@
 		// });
 		var options = ['code', '|', 'bold', 'italic', 'underline', 'strikethrough', 'forecolor', 'backcolor', 'removeformat', '|', 'quotes', 'fontname', 'fontsize', 'heading', 'indent', 'outdent', 
 		'insertorderedlist', 'insertunorderedlist', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|', 'createlink', 'insertimage', 'insertvideo', 'insertcode'];
-		
-		Array.prototype.slice.call(document.querySelectorAll('.editor')).forEach(function(el){
-			var edit = Edit.getEditor(el.getAttribute('id'),{
+		var editor1 =Edit.getEditor('editor1',{
 				toolbars: options,
+				focus: false,
 				events: {
-					contentchange: function(ev){
-						console.log(ev)
-					}
-				}
-			});	
-			options.pop();
-			console.log(edit)
-			// edit.destroy();
-		});
-
+					contentchange: function(editor){
+						console.log(editor.body.innerHTML)
+					},
+					// selectionchange: function(editor) {
+					// 	console.log(editor.body.innerHTML)
+					// }
+				},
+				resize: true
+		})
+		console.log(editor1)
+		var editor2 = Edit.getEditor('editor2',{
+		})
+	
 
 		// var editor = Edit.getEditor('editor1', {
 		// 	resize: true
@@ -113,10 +94,16 @@
 		// 	console.log(this)
 		// })
 
-		// var btn = document.querySelector('.getContent');
-		// btn.onclick = function(){
-		// 	console.log(editor.getContentTxt())
-		// }
+		var btn = document.querySelector('.getContent');
+		btn.onclick = function(){
+		  	console.log(editor1.getPlainTxt())
+		}
+
+
+		setTimeout(function(){
+			editor2.destroy();
+			// editor.setContent('初始化内容\n这是一段文字\n<img src="http://qiniu-user.koudaitiku.com/10138_265D279C2EB6875119D3EF8353AED2F0.png" style="max-width:100%;height:auto;">')
+		},5000)
 		
 	</script>
 </body>
