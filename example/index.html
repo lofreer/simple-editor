@@ -40,7 +40,7 @@
 	<div class="handlers">
 		<span class="btn getContent">获取内容</span>
 	</div>
-	<script src="../lib/js/editor.js"></script>
+	<script src="../lib/js/editor.min.js"></script>
 	<script src="../lib/plugins/mathtype/index.js"></script>
 	<script>		
 		// Edit.registerUI('summary',function(editor,uiName){
@@ -81,8 +81,12 @@
 				resize: true
 		})
 		console.log(editor1)
-		var editor2 = Edit.getEditor('editor2',{
-		})
+
+		setTimeout(function(){
+			Edit.delEditor('editor1')
+			console.log(Edit.getEditor('editor1'))
+		},3000)
+		
 	
 
 		// var editor = Edit.getEditor('editor1', {
@@ -98,12 +102,6 @@
 		btn.onclick = function(){
 		  	console.log(editor1.getPlainTxt())
 		}
-
-
-		setTimeout(function(){
-			editor2.destroy();
-			// editor.setContent('初始化内容\n这是一段文字\n<img src="http://qiniu-user.koudaitiku.com/10138_265D279C2EB6875119D3EF8353AED2F0.png" style="max-width:100%;height:auto;">')
-		},5000)
 		
 	</script>
 </body>
