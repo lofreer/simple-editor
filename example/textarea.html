@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <div id="text" contentEditable="true">111</div>
+
+    <script>
+        var text = document.getElementById('text');
+        text.addEventListener('change', function(){
+            console.log(555)
+        })
+
+        var p = document.createElement('p');
+        p.innerHTML = 555;
+
+        text.appendChild(p)
+
+        console.log(text)
+    </script>
+</body>
+</html>
