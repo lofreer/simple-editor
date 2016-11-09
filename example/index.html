@@ -49,7 +49,7 @@
 		<div id="editor3" class="editor"><p>初始化内容3</p></div>
 		<div id="editor4" class="editor"><p>初始化内容4</p></div>
 	</div>
-	<script src="../lib/js/editor.min.js"></script>
+	<script src="../lib/js/editor.js"></script>
 	<script src="../lib/plugins/mathtype/index.js"></script>
 	<script>		
 		// Edit.registerUI('summary',function(editor,uiName){
@@ -78,7 +78,7 @@
 		'insertorderedlist', 'insertunorderedlist', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|', 'createlink', 'insertimage', 'insertvideo', 'insertcode'];
 		var editor1 =Edit.getEditor('editor1',{
 				//toolbars: options,
-				focus: false,
+				focus: true,
 				events: {
 					contentchange: function(editor){
 						console.log(editor.getPlainTxt())
@@ -91,8 +91,8 @@
 		})
 		console.log(editor1)
 
-		Edit.getEditor('editor3');
-		Edit.getEditor('editor4');
+		// Edit.getEditor('editor3');
+		// Edit.getEditor('editor4');
 
 		//setTimeout(function(){
 		//	Edit.delEditor('editor1')
@@ -112,7 +112,7 @@
 
 		var btn = document.querySelector('.getContent');
 		btn.onclick = function(){
-		  	editor1.execCommand('inserthtml','<p><br></p>')
+		  	editor1.setContent(null)
 		}
 		
 	</script>
