@@ -30,7 +30,11 @@
 			padding: 6px 10px;
 			margin: 5px;
 		}
-		
+		.box {
+			width: 800px;
+			height: 300px;
+			overflow: auto;
+		}
 
 	</style>
 </head>
@@ -39,6 +43,11 @@
 	<!--<div id="editor2" class="editor"><p>初始化内容2222</p></div>-->
 	<div class="handlers">
 		<span class="btn getContent">获取内容</span>
+	</div>
+
+	<div class="box">
+		<div id="editor3" class="editor"><p>初始化内容3</p></div>
+		<div id="editor4" class="editor"><p>初始化内容4</p></div>
 	</div>
 	<script src="../lib/js/editor.min.js"></script>
 	<script src="../lib/plugins/mathtype/index.js"></script>
@@ -81,6 +90,9 @@
 				resize: true
 		})
 		console.log(editor1)
+
+		Edit.getEditor('editor3');
+		Edit.getEditor('editor4');
 
 		//setTimeout(function(){
 		//	Edit.delEditor('editor1')
