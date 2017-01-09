@@ -65,6 +65,21 @@
     box-sizing: border-box;
 }
 
+.math-hint {
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    border-radius: 2px;
+    padding: 5px;
+    color: #42a5f5;
+    cursor: pointer;
+    text-decoration: none;
+}
+.math-hint:hover {
+    background: #f6f6f6;
+}
+
 .math-preview {
     height: 60px;
     line-height: 60px;
