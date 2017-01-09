@@ -215,6 +215,7 @@
 	display: block;
 }
 .panel-handles {
+	position: relative;
 	text-align: right;
 }
 .panel-handles span {
