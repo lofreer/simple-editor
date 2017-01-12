@@ -1,9 +1,13 @@
+.math-title {
+    line-height: 1;
+    margin: 0 0 10px 0;
+}
 .math-menu {
     position: relative;
     list-style: none;
     padding: 0;
     margin: 0;
-    width: 320px;
+    width: 420px;
     line-height: 1;
     background-image: -webkit-linear-gradient(top,#F5F5F5,#EFEFEF);
     padding: 2px 5px;
@@ -56,7 +60,7 @@
 
 .math-text {
     width: 100%;
-    height: 60px;
+    height: 100px;
     outline: none;
     resize: vertical;
     padding: 5px;
@@ -81,8 +85,8 @@
 }
 
 .math-preview {
-    height: 60px;
-    line-height: 60px;
+    height: 100px;
+    line-height: 100px;
     text-align: center;
     padding: 5px;
     border: 1px dashed #cfcfcf;
