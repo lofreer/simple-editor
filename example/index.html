@@ -16,8 +16,8 @@
 			margin: 50px auto;
 		}
 		.handlers {
-			width: 750px;
-			height: 600px;
+			width: 800px;
+			text-align: center;
 			margin: 0 auto;
 		}
 		.handlers .btn {
@@ -35,19 +35,24 @@
 			height: 300px;
 			overflow: auto;
 		}
+		.content-textarea {
+			display: block;
+			width: 780px;
+			height: 150px;
+			padding: 10px;
+			margin: 20px auto 10px;
+			box-sizing: border-box;
+		}
 
 	</style>
 </head>
 <body>	
 	<div id="editor1" class="editor"><p>初始化内容1</p></div>
 	<!--<div id="editor2" class="editor"><p>初始化内容2222</p></div>-->
+	<textarea name="" id="content" class="content-textarea" cols="30" rows="10"></textarea>
 	<div class="handlers">
 		<span class="btn getContent">获取内容</span>
-	</div>
-
-	<div class="box">
-		<div id="editor3" class="editor"><p>初始化内容3</p></div>
-		<div id="editor4" class="editor"><p>初始化内容4</p></div>
+		<span class="btn setContent">设置内容</span>
 	</div>
 	<script src="../lib/js/editor.js"></script>
 	<script src="../lib/plugins/mathtype/index.js"></script>
@@ -81,7 +86,7 @@
 				focus: true,
 				events: {
 					contentchange: function(editor){
-						console.log(editor.getPlainTxt())
+						// console.log(editor.getPlainTxt())
 					},
 					// selectionchange: function(editor) {
 					// 	console.log(editor.body.innerHTML)
@@ -109,10 +114,15 @@
 		// 	console.log(e)
 		// 	console.log(this)
 		// })
+		var contentBox =  document.querySelector('#content');
 
-		var btn = document.querySelector('.getContent');
-		btn.onclick = function(){
-			console.log(editor1.isEmpty())
+		var getBtn = document.querySelector('.getContent');
+		getBtn.onclick = function(){
+			contentBox.value = editor1.getContent()
+		}
+		var setBtn = document.querySelector('.setContent');
+		setBtn.onclick = function(){
+			editor1.setContent(contentBox.value)
 		}
 		
 	</script>
